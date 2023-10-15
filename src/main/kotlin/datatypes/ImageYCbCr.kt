@@ -23,6 +23,22 @@ class ImageYCbCr(var pixels: Array<Array<YCbCr>>) {
         }
     }
 
+    fun subsampleCb(sampleLength: Int, firstLineNumSamples: Int, secondLineNumSamples: Int) {
+
+        var result = ImageYCbCr.empty(w, h)
+
+      //  for ()
+
+        for (y in 1..<pixels.size step 2) {
+            val upperRow = pixels[y-1];
+            val loweRow = pixels[y];
+            for (x in 0..<upperRow.size) {
+
+            }
+        }
+
+    }
+
     companion object{
         fun empty(w: Int, h: Int): ImageYCbCr{
             var pixels: Array<Array<YCbCr>> = Array(h){ Array(w){ YCbCr() } };

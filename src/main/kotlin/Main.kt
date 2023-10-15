@@ -5,5 +5,6 @@ fun main(args: Array<String>) {
     image.print()
     println()
     val yCbCrImage = image.toYCbCr();
-    yCbCrImage.print()
+    yCbCrImage.subsampleCb(4,2,2);
+//    yCbCrImage.subsampleCr(4,2,2)
 }
