@@ -1,18 +1,19 @@
 package datatypes
 
+import java.awt.Image
 import java.io.File
 import java.util.stream.Collectors
 
-class Image (var pixels: Array<Array<Pixel>>) {
+class ImageRGB (var pixels: Array<Array<RGB>>) {
     val h = pixels.size;
     val w = pixels[0].size;
 
-    fun getPixel(x: Int, y: Int): Pixel{
+    fun getPixel(x: Int, y: Int): RGB{
         if (x in 0..<w && y in 0..<h)
             return pixels[y][x];
-        else return Pixel(0,0,0);
+        else return RGB(0,0,0);
     }
-    fun setPixel(x: Int, y: Int, pixel: Pixel ){
+    fun setPixel(x: Int, y: Int, pixel: RGB ){
         if (x in 0..<w && y in 0..<h)
             pixels[y][x] = pixel;
     }
@@ -26,31 +27,41 @@ class Image (var pixels: Array<Array<Pixel>>) {
         }
     }
 
+    fun toYCbCr(): ImageYCbCr {
+        var result = ImageYCbCr.empty(w, h)
+        for ((y, row) in pixels.withIndex()) {
+            for((x, pixel) in row.withIndex()){
+                val toYCbCr = pixel.toYCbCr();
+                result.setPixel(x, y, toYCbCr)
+            }
+        }
+        return result;
+    }
 
 
     companion object {
-        fun empty(w: Int, h: Int, strideW: Int, strideH: Int ): Image{
+        fun empty(w: Int, h: Int, strideW: Int, strideH: Int ): ImageRGB{
             var realW = if (w<=strideW) strideW else w;
             var realH = if (h<=strideH) strideH else h;
 
             if (realW % strideW != 0) realW = realW - (w % strideW) + strideW
             if (realH % strideH != 0) realH = realH - (h % strideH) + strideH
 
-            var pixels: Array<Array<Pixel>> = Array(realH){ Array(realW){ Pixel() } };
-            return Image(pixels);
+            var pixels: Array<Array<RGB>> = Array(realH){ Array(realW){ RGB() } };
+            return ImageRGB(pixels);
         }
 
         fun readFileAsLinesUsingBufferedReader(fileName: String): List<String>
                 = File(fileName).bufferedReader().readLines()
 
-        fun readPPM(path: String, strideW: Int, strideH: Int ) : Image{
+        fun readPPM(path: String, strideW: Int, strideH: Int ) : ImageRGB{
             var fileContentWithoutComments = readFileAsLinesUsingBufferedReader(path).filterNot { it.startsWith("#") };
             var lines: MutableList<String> = fileContentWithoutComments.stream().skip(1).collect(Collectors.toList());
             val widthHeight = lines.removeFirst().split(" ");
             var picWidth =  widthHeight.get(0).toInt();
             var picHeight = widthHeight.get(1).toInt();
 
-            var result = empty(picWidth, picHeight,6, 6)
+            var result = empty(picWidth, picHeight, strideW, strideH)
             val maxColorVal = lines.removeFirst().toInt();
 
             for (y in 0..<result.h) {
@@ -85,7 +96,7 @@ class Image (var pixels: Array<Array<Pixel>>) {
                         b = (numbers[(x * 3) + 2] * 255) / maxColorVal ;
                     }
 
-                    var curPixel = Pixel(r,g,b);
+                    var curPixel = RGB(r,g,b);
                     result.setPixel(x, y, curPixel)
                 }
             }

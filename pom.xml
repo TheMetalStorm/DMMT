@@ -84,13 +84,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jetbrains.bio</groupId>
-            <artifactId>viktor</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.bio</groupId>
-            <artifactId>viktor</artifactId>
-            <version>1.2.0</version>
+            <groupId>org.ejml</groupId>
+            <artifactId>ejml-kotlin</artifactId>
+            <version>0.43.1</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

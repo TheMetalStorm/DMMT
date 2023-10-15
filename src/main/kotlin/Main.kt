@@ -1,8 +1,9 @@
-import datatypes.Image
-import datatypes.Pixel
+import datatypes.ImageRGB
 
 fun main(args: Array<String>) {
-    var image: Image = Image.empty(7, 17, 16, 16)
-    var im = Image.readPPM("src/main/image.ppm", 2, 2)
-    im.print()
+    var image = ImageRGB.readPPM("src/main/image.ppm", 6, 6)
+    image.print()
+    println()
+    val yCbCrImage = image.toYCbCr();
+    yCbCrImage.print()
 }
