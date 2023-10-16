@@ -16,10 +16,9 @@ data class RGB(var r: Int = 0, var g: Int = 0, var b: Int = 0) {
     }
 
     fun toYCbCr(): YCbCr {
-        var originalRGB = SimpleMatrix(3, 1, true, r.toDouble() / 255, g.toDouble()/ 255, b.toDouble()/ 255)
-        var addMatrix = SimpleMatrix(3, 1, true,0.0,.5,.5);
-        val newPixel =  yCbCrMatrix.mult(originalRGB)
-            .plus(addMatrix);
+        val originalRGB = SimpleMatrix(3, 1, true, r.toDouble() / 255, g.toDouble()/ 255, b.toDouble()/ 255)
+        val addMatrix = SimpleMatrix(3, 1, true,0.0,.5,.5)
+        val newPixel =  yCbCrMatrix.mult(originalRGB).plus(addMatrix)
         return YCbCr(newPixel[0], newPixel[1], newPixel [2])
 
     }

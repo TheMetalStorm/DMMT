@@ -1,6 +1,5 @@
 package datatypes
 
-import java.awt.Image
 import java.io.File
 import java.util.stream.Collectors
 
@@ -28,7 +27,7 @@ class ImageRGB (var pixels: Array<Array<RGB>>) {
     }
 
     fun toYCbCr(): ImageYCbCr {
-        var result = ImageYCbCr.empty(w, h)
+        val result = ImageYCbCr.empty(w, h)
         for ((y, row) in pixels.withIndex()) {
             for((x, pixel) in row.withIndex()){
                 val toYCbCr = pixel.toYCbCr();
@@ -65,15 +64,14 @@ class ImageRGB (var pixels: Array<Array<RGB>>) {
             val maxColorVal = lines.removeFirst().toInt();
 
             for (y in 0..<result.h) {
-                var numbers: MutableList<Int>;
-                if(y >= picHeight){
-                     numbers = Regex("[0-9]+").findAll(lines[lines.size-1])
+                var numbers: MutableList<Int>
+                numbers = if(y >= picHeight){
+                    Regex("[0-9]+").findAll(lines[lines.size-1])
                         .map(MatchResult::value)
                         .map(String::toInt)
                         .toMutableList()
-                }
-                else{
-                    numbers = Regex("[0-9]+").findAll(lines[y])
+                } else{
+                    Regex("[0-9]+").findAll(lines[y])
                         .map(MatchResult::value)
                         .map(String::toInt)
                         .toMutableList()
