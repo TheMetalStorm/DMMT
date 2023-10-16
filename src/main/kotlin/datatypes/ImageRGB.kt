@@ -4,25 +4,25 @@ import java.io.File
 import java.util.stream.Collectors
 
 class ImageRGB (var pixels: Array<Array<RGB>>) {
-    val h = pixels.size;
-    val w = pixels[0].size;
+    val h = pixels.size
+    val w = pixels[0].size
 
     fun getPixel(x: Int, y: Int): RGB{
-        if (x in 0..<w && y in 0..<h)
-            return pixels[y][x];
-        else return RGB(0,0,0);
+        return if (x in 0..<w && y in 0..<h)
+            pixels[y][x]
+        else RGB(0,0,0)
     }
     fun setPixel(x: Int, y: Int, pixel: RGB ){
         if (x in 0..<w && y in 0..<h)
-            pixels[y][x] = pixel;
+            pixels[y][x] = pixel
     }
 
     fun print(){
         for(row in pixels){
             for (pixel in row){
-                print(pixel.toString());
+                print(pixel.toString())
             }
-            println();
+            println()
         }
     }
 
@@ -30,38 +30,38 @@ class ImageRGB (var pixels: Array<Array<RGB>>) {
         val result = ImageYCbCr.empty(w, h)
         for ((y, row) in pixels.withIndex()) {
             for((x, pixel) in row.withIndex()){
-                val toYCbCr = pixel.toYCbCr();
+                val toYCbCr = pixel.toYCbCr()
                 result.setPixel(x, y, toYCbCr)
             }
         }
-        return result;
+        return result
     }
 
 
     companion object {
         fun empty(w: Int, h: Int, strideW: Int, strideH: Int ): ImageRGB{
-            var realW = if (w<=strideW) strideW else w;
-            var realH = if (h<=strideH) strideH else h;
+            var realW = if (w<=strideW) strideW else w
+            var realH = if (h<=strideH) strideH else h
 
             if (realW % strideW != 0) realW = realW - (w % strideW) + strideW
             if (realH % strideH != 0) realH = realH - (h % strideH) + strideH
 
-            var pixels: Array<Array<RGB>> = Array(realH){ Array(realW){ RGB() } };
-            return ImageRGB(pixels);
+            val pixels: Array<Array<RGB>> = Array(realH){ Array(realW){ RGB() } }
+            return ImageRGB(pixels)
         }
 
         fun readFileAsLinesUsingBufferedReader(fileName: String): List<String>
                 = File(fileName).bufferedReader().readLines()
 
         fun readPPM(path: String, strideW: Int, strideH: Int ) : ImageRGB{
-            var fileContentWithoutComments = readFileAsLinesUsingBufferedReader(path).filterNot { it.startsWith("#") };
-            var lines: MutableList<String> = fileContentWithoutComments.stream().skip(1).collect(Collectors.toList());
-            val widthHeight = lines.removeFirst().split(" ");
-            var picWidth =  widthHeight.get(0).toInt();
-            var picHeight = widthHeight.get(1).toInt();
+            val fileContentWithoutComments = readFileAsLinesUsingBufferedReader(path).filterNot { it.startsWith("#") }
+            val lines: MutableList<String> = fileContentWithoutComments.stream().skip(1).collect(Collectors.toList())
+            val widthHeight = lines.removeFirst().split(" ")
+            val picWidth =  widthHeight.get(0).toInt()
+            val picHeight = widthHeight.get(1).toInt()
 
-            var result = empty(picWidth, picHeight, strideW, strideH)
-            val maxColorVal = lines.removeFirst().toInt();
+            val result = empty(picWidth, picHeight, strideW, strideH)
+            val maxColorVal = lines.removeFirst().toInt()
 
             for (y in 0..<result.h) {
                 var numbers: MutableList<Int>
@@ -79,22 +79,22 @@ class ImageRGB (var pixels: Array<Array<RGB>>) {
 
 
                 for (x in 0..<result.w) {
-                    var r: Int;
-                    var g: Int;
-                    var b: Int;
+                    var r: Int
+                    var g: Int
+                    var b: Int
                     if(x >= picWidth) {
                         val lastIndex = picWidth - 1
-                        r = (numbers[lastIndex * 3] * 255) / maxColorVal ;
-                        g = (numbers[(lastIndex * 3) + 1] * 255) / maxColorVal ;
-                        b = (numbers[(lastIndex * 3) + 2] * 255) / maxColorVal ;
+                        r = (numbers[lastIndex * 3] * 255) / maxColorVal
+                        g = (numbers[(lastIndex * 3) + 1] * 255) / maxColorVal
+                        b = (numbers[(lastIndex * 3) + 2] * 255) / maxColorVal
                     }
                     else{
-                        r = (numbers[x * 3] * 255) / maxColorVal ;
-                        g = (numbers[(x * 3) + 1] * 255) / maxColorVal ;
-                        b = (numbers[(x * 3) + 2] * 255) / maxColorVal ;
+                        r = (numbers[x * 3] * 255) / maxColorVal
+                        g = (numbers[(x * 3) + 1] * 255) / maxColorVal
+                        b = (numbers[(x * 3) + 2] * 255) / maxColorVal
                     }
 
-                    var curPixel = RGB(r,g,b);
+                    val curPixel = RGB(r,g,b)
                     result.setPixel(x, y, curPixel)
                 }
             }
