@@ -75,9 +75,6 @@ class ImageYCbCr(var pixels: Array<Array<YCbCr>>) {
                         }
 
                     }
-
-
-
                     if (secondLineNumSamples != 0) {
                         for (z in 0..<lower.size step sampleLength / secondLineNumSamples) {
                             val samplePixel = lower[z]
@@ -92,13 +89,9 @@ class ImageYCbCr(var pixels: Array<Array<YCbCr>>) {
                 }
             }
         }
-            else {
-                for (y in 0..< pixels.size-1) {
-                    for (x in 0..< pixels[0].size-1) {
-                        result.setPixel(x, y, YCbCr(pixels[x][y].y, pixels[x][y].cb, pixels[x][y].cr))
-                    }
-                }
-            }
+        else{
+            return this;
+        }
         return result
     }
 
@@ -152,10 +145,7 @@ class ImageYCbCr(var pixels: Array<Array<YCbCr>>) {
                                 }
                             }
                         }
-
                     }
-
-
 
                     if (secondLineNumSamples != 0) {
                         for (z in 0..<lower.size step sampleLength / secondLineNumSamples) {
@@ -171,13 +161,9 @@ class ImageYCbCr(var pixels: Array<Array<YCbCr>>) {
                 }
             }
         }
-            else {
-                for (y in 0..< pixels.size-1) {
-                    for (x in 0..< pixels[0].size-1) {
-                        result.setPixel(x, y, YCbCr(pixels[x][y].y, pixels[x][y].cb, pixels[x][y].cr))
-                    }
-                }
-            }
+        else {
+            return this;
+        }
         return result
     }
 
@@ -187,16 +173,7 @@ class ImageYCbCr(var pixels: Array<Array<YCbCr>>) {
             return subsampleCb.subsampleCr(sampleLength, firstLineNumSamples, secondLineNumSamples)
         }
         else {
-            val result = empty(w, h)
-            for (y in 0..< pixels.size-1) {
-                for (x in 0..< pixels[0].size-1) {
-                    result.setPixel(x, y, YCbCr(pixels[x][y].y, pixels[x][y].cb, pixels[x][y].cr))
-                }
-
-
-
-            }
-            return result
+            return this;
         }
     }
 
