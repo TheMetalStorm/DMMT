@@ -34,41 +34,41 @@ class ImageYCbCr(var pixels: Array<Array<YCbCr>>) {
                 val lowerRow = pixels[y + 1]
                 for (x in 0..<upperRow.size - sampleLength step sampleLength) {
                     val upper: MutableList<YCbCr> = mutableListOf()
-                    for (z in 0..<sampleLength) {
-                        upper.add(upperRow[x + z])
+                    for (sampleIndex in 0..<sampleLength) {
+                        upper.add(upperRow[x + sampleIndex])
                     }
 
                     val lower: MutableList<YCbCr> = mutableListOf()
-                    for (z in 0..<sampleLength) {
-                        lower.add(lowerRow[x + z])
+                    for (sampleIndex in 0..<sampleLength) {
+                        lower.add(lowerRow[x + sampleIndex])
                     }
 
-                    for (z in 0..<upper.size step sampleLength / firstLineNumSamples) {
-                        val samplePixel = upper[z]
-                        for (h in 0..<firstLineNumSamples) {
+                    for (sampleIndex in 0..<upper.size step sampleLength / firstLineNumSamples) {
+                        val samplePixel = upper[sampleIndex]
+                        for (nonSampleIndex in 0..<firstLineNumSamples) {
 
                             if (sampleLength != firstLineNumSamples) {
-                                val toChange = upper[z + h]
-                                result.setPixel(x + z + h, y, YCbCr(toChange.y, samplePixel.cb, toChange.cr))
+                                val toChange = upper[sampleIndex + nonSampleIndex]
+                                result.setPixel(x + sampleIndex + nonSampleIndex, y, YCbCr(toChange.y, samplePixel.cb, toChange.cr))
                                 if (secondLineNumSamples == 0) {
-                                    val toChangeLower = lower[z + h]
+                                    val toChangeLower = lower[sampleIndex + nonSampleIndex]
                                     result.setPixel(
-                                        x + z + h,
+                                        x + sampleIndex + nonSampleIndex,
                                         y + 1,
                                         YCbCr(toChangeLower.y, samplePixel.cb, toChangeLower.cr)
                                     )
                                 }
                             } else {
                                 result.setPixel(
-                                    x + z + h,
+                                    x + sampleIndex + nonSampleIndex,
                                     y,
-                                    YCbCr(upperRow[x + z + h].y, upperRow[x + z + h].cb, upperRow[x + z + h].cr)
+                                    YCbCr(upperRow[x + sampleIndex + nonSampleIndex].y, upperRow[x + sampleIndex + nonSampleIndex].cb, upperRow[x + sampleIndex + nonSampleIndex].cr)
                                 )
                                 if (secondLineNumSamples == 0) {
                                     result.setPixel(
-                                        x + z + h,
+                                        x + sampleIndex + nonSampleIndex,
                                         y + 1,
-                                        YCbCr(upperRow[x + z + h].y, upperRow[x + z + h].cb, upperRow[x + z + h].cr)
+                                        YCbCr(upperRow[x + sampleIndex + nonSampleIndex].y, upperRow[x + sampleIndex + nonSampleIndex].cb, upperRow[x + sampleIndex + nonSampleIndex].cr)
                                     )
                                 }
                             }
@@ -76,11 +76,11 @@ class ImageYCbCr(var pixels: Array<Array<YCbCr>>) {
 
                     }
                     if (secondLineNumSamples != 0) {
-                        for (z in 0..<lower.size step sampleLength / secondLineNumSamples) {
-                            val samplePixel = lower[z]
-                            for (h in 0..<secondLineNumSamples) {
-                                val toChange = lower[z + h]
-                                result.setPixel(x + z + h, y + 1, YCbCr(toChange.y, samplePixel.cb, toChange.cr))
+                        for (sampleIndex in 0..<lower.size step sampleLength / secondLineNumSamples) {
+                            val samplePixel = lower[sampleIndex]
+                            for (nonSampleIndex in 0..<secondLineNumSamples) {
+                                val toChange = lower[sampleIndex + nonSampleIndex]
+                                result.setPixel(x + sampleIndex + nonSampleIndex, y + 1, YCbCr(toChange.y, samplePixel.cb, toChange.cr))
                             }
 
                         }
@@ -107,40 +107,40 @@ class ImageYCbCr(var pixels: Array<Array<YCbCr>>) {
                 val lowerRow = pixels[y + 1]
                 for (x in 0..<upperRow.size - sampleLength step sampleLength) {
                     val upper: MutableList<YCbCr> = mutableListOf()
-                    for (z in 0..<sampleLength) {
-                        upper.add(upperRow[x + z])
+                    for (sampleIndex in 0..<sampleLength) {
+                        upper.add(upperRow[x + sampleIndex])
                     }
 
                     val lower: MutableList<YCbCr> = mutableListOf()
-                    for (z in 0..<sampleLength) {
-                        lower.add(lowerRow[x + z])
+                    for (sampleIndex in 0..<sampleLength) {
+                        lower.add(lowerRow[x + sampleIndex])
                     }
 
-                    for (z in 0..<upper.size step sampleLength / firstLineNumSamples) {
-                        val samplePixel = upper[z]
-                        for (h in 0..<firstLineNumSamples) {
+                    for (sampleIndex in 0..<upper.size step sampleLength / firstLineNumSamples) {
+                        val samplePixel = upper[sampleIndex]
+                        for (nonSampleIndex in 0..<firstLineNumSamples) {
                             if (sampleLength != firstLineNumSamples) {
-                                val toChange = upper[z + h]
-                                result.setPixel(x + z + h, y, YCbCr(toChange.y, toChange.cb, samplePixel.cr))
+                                val toChange = upper[sampleIndex + nonSampleIndex]
+                                result.setPixel(x + sampleIndex + nonSampleIndex, y, YCbCr(toChange.y, toChange.cb, samplePixel.cr))
                                 if (secondLineNumSamples == 0) {
-                                    val toChangeLower = lower[z + h]
+                                    val toChangeLower = lower[sampleIndex + nonSampleIndex]
                                     result.setPixel(
-                                        x + z + h,
+                                        x + sampleIndex + nonSampleIndex,
                                         y + 1,
                                         YCbCr(toChangeLower.y, toChangeLower.cb, samplePixel.cr)
                                     )
                                 }
                             } else {
                                 result.setPixel(
-                                    x + z + h,
+                                    x + sampleIndex + nonSampleIndex,
                                     y,
-                                    YCbCr(upperRow[x + z + h].y, upperRow[x + z + h].cb, upperRow[x + z + h].cr)
+                                    YCbCr(upperRow[x + sampleIndex + nonSampleIndex].y, upperRow[x + sampleIndex + nonSampleIndex].cb, upperRow[x + sampleIndex + nonSampleIndex].cr)
                                 )
                                 if (secondLineNumSamples == 0) {
                                     result.setPixel(
-                                        x + z + h,
+                                        x + sampleIndex + nonSampleIndex,
                                         y + 1,
-                                        YCbCr(upperRow[x + z + h].y, upperRow[x + z + h].cb, upperRow[x + z + h].cr)
+                                        YCbCr(upperRow[x + sampleIndex + nonSampleIndex].y, upperRow[x + sampleIndex + nonSampleIndex].cb, upperRow[x + sampleIndex + nonSampleIndex].cr)
                                     )
                                 }
                             }
@@ -148,11 +148,11 @@ class ImageYCbCr(var pixels: Array<Array<YCbCr>>) {
                     }
 
                     if (secondLineNumSamples != 0) {
-                        for (z in 0..<lower.size step sampleLength / secondLineNumSamples) {
-                            val samplePixel = lower[z]
-                            for (h in 0..<secondLineNumSamples) {
-                                val toChange = lower[z + h]
-                                result.setPixel(x + z + h, y + 1, YCbCr(toChange.y, toChange.cb, samplePixel.cr))
+                        for (sampleIndex in 0..<lower.size step sampleLength / secondLineNumSamples) {
+                            val samplePixel = lower[sampleIndex]
+                            for (nonSampleIndex in 0..<secondLineNumSamples) {
+                                val toChange = lower[sampleIndex + nonSampleIndex]
+                                result.setPixel(x + sampleIndex + nonSampleIndex, y + 1, YCbCr(toChange.y, toChange.cb, samplePixel.cr))
                             }
 
                         }
@@ -168,12 +168,11 @@ class ImageYCbCr(var pixels: Array<Array<YCbCr>>) {
     }
 
     fun subsample(sampleLength: Int, firstLineNumSamples: Int, secondLineNumSamples: Int):ImageYCbCr {
-        if (sampleLength != firstLineNumSamples || sampleLength != secondLineNumSamples) {
+        return if (sampleLength != firstLineNumSamples || sampleLength != secondLineNumSamples) {
             val subsampleCb = subsampleCb(sampleLength, firstLineNumSamples, secondLineNumSamples)
-            return subsampleCb.subsampleCr(sampleLength, firstLineNumSamples, secondLineNumSamples)
-        }
-        else {
-            return this;
+            subsampleCb.subsampleCr(sampleLength, firstLineNumSamples, secondLineNumSamples)
+        } else {
+            this;
         }
     }
 

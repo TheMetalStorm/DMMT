@@ -2,6 +2,7 @@ package datatypes
 
 import java.io.File
 import java.util.stream.Collectors
+import java.util.stream.Collectors.toList
 
 class ImageRGB (var pixels: Array<Array<RGB>>) {
     val h = pixels.size
@@ -54,18 +55,20 @@ class ImageRGB (var pixels: Array<Array<RGB>>) {
                 = File(fileName).bufferedReader().readLines()
 
         fun readPPM(path: String, strideW: Int, strideH: Int ) : ImageRGB{
-            val fileContentWithoutComments = readFileAsLinesUsingBufferedReader(path).filterNot { it.startsWith("#") }
-            val lines: MutableList<String> = fileContentWithoutComments.stream().skip(1).collect(Collectors.toList())
+            val lines: MutableList<String> = readFileAsLinesUsingBufferedReader(path).filterNot { it.startsWith("#") }
+                .stream()
+                .skip(1)
+                .collect(toList());
+
             val widthHeight = lines.removeFirst().split(" ")
-            val picWidth =  widthHeight.get(0).toInt()
-            val picHeight = widthHeight.get(1).toInt()
+            val picWidth =  widthHeight[0].toInt()
+            val picHeight = widthHeight[1].toInt()
 
             val result = empty(picWidth, picHeight, strideW, strideH)
             val maxColorVal = lines.removeFirst().toInt()
 
             for (y in 0..<result.h) {
-                var numbers: MutableList<Int>
-                numbers = if(y >= picHeight){
+                val numbers: MutableList<Int> = if(y >= picHeight){
                     Regex("[0-9]+").findAll(lines[lines.size-1])
                         .map(MatchResult::value)
                         .map(String::toInt)
