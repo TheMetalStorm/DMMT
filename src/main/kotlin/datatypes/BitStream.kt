@@ -24,7 +24,7 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(UByte.M
         }
     }
 
-    private fun  getLastByte(): UByte{
+     fun  getLastByte(): UByte{
         return values.last
     }
 
@@ -32,7 +32,14 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(UByte.M
         return values[index];
     }
 
-    private fun modifyByteAfterLastRelevantBit(byteToModify: UByte, bitToAdd: Int): UByte {
+    fun getBit(index: Int): Int {
+        val byteIndex = index / 8
+        val bitIndex = index % 8
+        val bit = getByte(byteIndex).toInt() shr (7 - bitIndex) and 1
+        return bit
+    }
+
+     fun modifyByteAfterLastRelevantBit(byteToModify: UByte, bitToAdd: Int): UByte {
         var result: Int = byteToModify.toInt()
         result = calculateModifiedByte(result, bitToAdd)
         return result.toUByte()
@@ -67,7 +74,7 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(UByte.M
         writer.close()
     }
 
-    private fun UByte.toBinaryString(): String{
+     fun UByte.toBinaryString(): String{
         var result = this.toString(2)
 
         while(result.length < 8){
@@ -75,6 +82,10 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(UByte.M
 
         }
         return result;
+    }
+
+    fun UByte.getBit(position: Int): Int {
+        return (this.toInt() shr position) and 1;
     }
 
     override fun equals(other: Any?): Boolean {

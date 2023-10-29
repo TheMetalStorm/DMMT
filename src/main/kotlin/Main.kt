@@ -1,4 +1,6 @@
 import datatypes.BitStream
+import kotlin.random.Random
+import kotlin.system.measureTimeMillis
 
 fun main() {
 //    val image = ImageRGB.readPPM("src/main/image.ppm", 8, 8)
@@ -10,11 +12,19 @@ fun main() {
 //    subsampleCbCr.print()
 
     val bitstream : BitStream = BitStream()
-    val listToAdd : ArrayList<Int> = arrayListOf(0,1,0,1,1)
-    bitstream.addToList(listToAdd)
-    bitstream.addToList(arrayListOf(0,1,1,1,0,0))
-    bitstream.addToList(arrayListOf(0,1,1,1,0,0))
-    bitstream.print()
-    bitstream.getByte()
-    bitstream.saveToFile("Aufgabe2b")
+
+    val time = measureTimeMillis  {
+        val iterations = 10000000;
+        for (i in 0..<iterations){
+            bitstream.addToList(1);
+        }
+
+        for (i in 0..<iterations){
+            var read = bitstream.getBit(i)
+
+        }
+    }
+    print("Time (ms): " + time)
+
+//    bitstream.saveToFile("Aufgabe2b")
 }
