@@ -47,7 +47,9 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(UByte.M
 
     private fun calculateModifiedByte(byteToModify: Int, bit: Int): Int {
         val shiftToRelevantBit = 7 - byteInsertIndex
-        return byteToModify or (bit shl shiftToRelevantBit)
+        if(bit == 1)
+            return byteToModify or (bit shl shiftToRelevantBit)
+        return byteToModify and (bit shl shiftToRelevantBit).inv()
     }
 
     private fun checkNumbersToParse(valuesToAdd: ArrayList<Int>) {
