@@ -39,6 +39,9 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
         return this
     }
     fun addToList(intToAdd: Int) {
+        if(values.size == 0){
+            values.add(UByte.MIN_VALUE)
+        }
         if(byteInsertIndex > 7){
             values.add((intToAdd shl 7).toUByte())
             byteInsertIndex = 1

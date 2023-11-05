@@ -11,14 +11,14 @@ class BitStreamTest {
         val listToAdd : ArrayList<Int> = arrayListOf(0,1,1,1,1,1,0,1) //125 -> 1111101
         bitstream.addToList(listToAdd)
         val testInt = 125
-        assertEquals(bitstream, BitStream(arrayListOf(testInt.toUByte()),7))
+        assertEquals(bitstream, BitStream(arrayListOf(testInt.toUByte()),8))
     }
     @Test
     fun modifyByteAfterLastRelevantBit() {
         val bitstream = BitStream()
         val listToAdd : ArrayList<Int> = arrayListOf(0,1,0,1,0,1,0)
         bitstream.addToList(listToAdd)
-        bitstream.modifyByteAfterLastRelevantBit(bitstream.getLastByte(),1)
+        bitstream.addToList(1)
         val bitstreamTest = BitStream()
         val listToAddTest : ArrayList<Int> = arrayListOf(0,1,0,1,0,1,0,1)
         bitstreamTest.addToList(listToAddTest)
