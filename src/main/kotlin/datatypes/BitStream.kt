@@ -1,12 +1,13 @@
 package datatypes
 
+import java.io.File
 import java.io.PrintWriter
 
 /**
  * This structure can be created with given byte. Attention:
  * for more byte control after creation -> use no parameter at creation
  */
-data class BitStream (private var values: ArrayList<UByte> = arrayListOf(UByte.MIN_VALUE), var byteInsertIndex: Int =0){
+data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var byteInsertIndex: Int =0){
     fun addToList(valuesToAdd: ArrayList<Int>) {
         checkNumbersToParse(valuesToAdd)
         for (value in valuesToAdd) {
@@ -29,8 +30,8 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(UByte.M
         if(values.isEmpty()){
             return this
         }
-        values.addAll(values)
-        byteInsertIndex=8;
+        this.values.addAll(values)
+        byteInsertIndex=0;
         return this
     }
     fun addByteToStream(value: UByte) : BitStream{
@@ -82,15 +83,13 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(UByte.M
         }
     }
 
-    fun print() {
+    fun printBits() {
         for (byte in values) {
             val st: String = byte.toBinaryString()
             print("[$st] ")
         }
         
     }
-
-
 
     fun saveToFile(fileName: String){
         val writer = PrintWriter(fileName)
@@ -101,6 +100,11 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(UByte.M
         writer.close()
     }
 
+    fun saveToFileAsBytes(fileName: String){
+        val file = File(fileName)
+        file.writeBytes(values.toUByteArray().toByteArray())
+
+    }
      fun UByte.toBinaryString(): String{
         var result = this.toString(2)
 

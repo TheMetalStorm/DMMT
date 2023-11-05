@@ -7,7 +7,12 @@ data class SOF0 (val dataAccuracy:UByte,val pictureSizeYHigh: UByte,val pictureS
     private var bitStream = BitStream()
     init {
         checkInput()
-        bitStream.addBitStream(BitStream(arrayListOf(0xff.toUByte(),0xc0.toUByte(), (8+componentCount.toInt()*3).toUByte(),
+
+        val length : UShort = (8+componentCount.toInt()*3).toUShort();
+        val lengthLow = length.toUByte()
+        val lengthHigh = (length.toInt() shr 8).toUByte()
+
+        bitStream.addBitStream(BitStream(arrayListOf(0xff.toUByte(),0xc0.toUByte(), lengthHigh, lengthLow,
             dataAccuracy, pictureSizeYHigh, pictureSizeYLow, pictureSizeXHigh, pictureSizeXLow, componentCount)))
         bitStream.addByteToStream(components)
     }

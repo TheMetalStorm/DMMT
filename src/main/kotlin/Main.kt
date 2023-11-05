@@ -1,8 +1,6 @@
 import JPGSegments.APP0
 import JPGSegments.SOF0
 import datatypes.BitStream
-import kotlin.random.Random
-import kotlin.system.measureTimeMillis
 
 fun main() {
 //    val image = ImageRGB.readPPM("src/main/image.ppm", 8, 8)
@@ -35,6 +33,7 @@ fun main() {
     //LINK TO SPEC-> https://elearning.thws.de/pluginfile.php/2033910/mod_resource/content/0/JPG-Spezifikation.pdf
     //VORSCHLAG KONTSTRUCTOREN für Segmente und mithilfe von Segmenten das JPG objekt zusammen bauen JPG(SEGMENT APP0, SEGMENT SOFO, etc.)
 
+    //helpful: https://mykb.cipindanci.com/archive/SuperKB/1294/JPEG%20File%20Layout%20and%20Format.htm
     val app0 = APP0(1.toUByte(), 1.toUByte(), 0.toUByte(), 0.toUByte(), 0x48.toUByte(), 0.toUByte(), 0x48.toUByte())
     val sof0 = SOF0(8.toUByte(), 0.toUByte(), 16.toUByte(), 0.toUByte(), 16.toUByte(), 1.toUByte(), arrayListOf(0x01.toUByte(), 0x22.toUByte(),
    0.toUByte()))
@@ -42,14 +41,16 @@ fun main() {
     //SOI
     bitstream.addByteToStream(arrayListOf(0xff.toUByte(), 0xd8.toUByte()))
 
-    //APP0
+//    //APP0
     bitstream.addBitStream(app0.getBitStream());
 
-    //SOF0
+//    //SOF0
     bitstream.addBitStream(sof0.getBitStream())
 
-    //EOI
+//    //EOI
     bitstream.addByteToStream(arrayListOf(0xff.toUByte(), 0xd9.toUByte()))
 
-    bitstream.saveToFile("test.jpg")
+    bitstream.printBits()
+
+    bitstream.saveToFileAsBytes("test.jpeg")
 }
