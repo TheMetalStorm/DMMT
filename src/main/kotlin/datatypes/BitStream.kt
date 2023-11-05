@@ -16,14 +16,14 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(UByte.M
 
     /**
      * This method adds a uByteArray to the end of the Bitstream, it does not change existing byte.
-     * It only adds and set the new index to 7.
+     * It only adds and set the new index to 8.
      */
     fun addByteToStream(values: ArrayList<UByte>) {
         if(values.isEmpty()){
             return;
         }
         values.addAll(values);
-        byteInsertIndex=7;
+        byteInsertIndex=8;
     }
     fun addToList(intToAdd: Int) {
         if(byteInsertIndex > 7){
