@@ -1,16 +1,10 @@
 package JPGSegments
 
 import datatypes.BitStream
-//SOFO -> länge des Sements(high byte, low byte) 8 + Anzahl Komponenten*3 + 1 Byte(8) + (2 Byte, Hi-Lo) >0 +
-//TODO: (2 Byte, Hi-Lo) >0 + 1 Byte (Anzahl der Komponenten) + jede Komponente 3 Byte
 class SOF0 (dataAccuracy:UByte, pictureSizeY: ArrayList<UByte>, pictureSizeX: ArrayList<UByte>, componentCount: UByte,
             components: ArrayList<UByte>){
 
-    var bitStream = BitStream()
-    //componentCount could be different than components.size -> Test!
-    //check if dataAccuracy is 8 or 12 or 16 but mainly 8 -> Test/Method
-    //check picure size >0 -> Test
-    //add high low logic for byte (picture size)
+    private var bitStream = BitStream()
     init {
         checkInput(pictureSizeX, pictureSizeY,dataAccuracy, componentCount, components)
         bitStream.addBitStream(BitStream(arrayListOf(0xff.toUByte(),0xc0.toUByte(), (8+componentCount.toInt()*3).toUByte(),

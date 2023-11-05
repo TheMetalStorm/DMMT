@@ -5,7 +5,7 @@ import datatypes.BitStream
 data class APP0 (val majorRev: UByte, val minorRev: UByte, val densityUnits: UByte, val xDensityHigh: UByte, val xDensityLow: UByte,
             val yDensityHigh: UByte, val yDensityLow: UByte ) {
 
-    val bitStream = BitStream()
+    private val bitStream = BitStream()
 
     init {
         checkInput()

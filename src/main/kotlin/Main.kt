@@ -1,3 +1,4 @@
+import JPGSegments.APP0
 import datatypes.BitStream
 import kotlin.random.Random
 import kotlin.system.measureTimeMillis
@@ -38,4 +39,5 @@ fun main() {
     //TODO: (2 Byte, Hi-Lo) >0 + 1 Byte (Anzahl der Komponenten) + jede Komponente 3 Byte
     //VORSCHLAG KONTSTRUCTOREN für Segmente und mithilfe von Segmenten das JPG objekt zusammen bauen JPG(SEGMENT APP0, SEGMENT SOFO, etc.)
 
+    val app0 = APP0(1.toUByte(), 1.1.toUByte())
 }
