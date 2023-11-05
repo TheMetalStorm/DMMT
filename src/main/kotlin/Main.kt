@@ -13,18 +13,21 @@ fun main() {
 
     val bitstream : BitStream = BitStream()
 
-    val time = measureTimeMillis  {
-        val iterations = 10000000;
-        for (i in 0..<iterations){
-            bitstream.addToList(1);
-        }
+//    val time = measureTimeMillis  {
+//        val iterations = 10000000;
+//        for (i in 0..<iterations){
+//            bitstream.addToList(1);
+//        }
+//
+//        for (i in 0..<iterations){
+//            var read = bitstream.getBit(i)
+//
+//        }
+//    }
+//    print("Time (ms): " + time)
 
-        for (i in 0..<iterations){
-            var read = bitstream.getBit(i)
-
-        }
-    }
-    print("Time (ms): " + time)
+    //APP0
+   // bitstream.addByteToStream(UByte.)
 
 //    bitstream.saveToFile("Aufgabe2b")
     //LINK TO SPEC-> https://elearning.thws.de/pluginfile.php/2033910/mod_resource/content/0/JPG-Spezifikation.pdf

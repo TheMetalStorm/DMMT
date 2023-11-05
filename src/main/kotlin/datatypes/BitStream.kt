@@ -15,15 +15,27 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(UByte.M
     }
 
     /**
+     * This methode add a Bitstreams to the end of the Bitstream and changes the byteInsertIndex to the new Bit location
+     */
+    fun addBitStream(streamToAdd: BitStream) {
+            this.values.addAll(streamToAdd.values)
+            this.byteInsertIndex = (this.byteInsertIndex + streamToAdd.byteInsertIndex)%7
+    }
+    /**
      * This method adds a uByteArray to the end of the Bitstream, it does not change existing byte.
      * It only adds and set the new index to 8.
      */
-    fun addByteToStream(values: ArrayList<UByte>) {
+    fun addByteToStream(values: ArrayList<UByte>): BitStream {
         if(values.isEmpty()){
-            return;
+            return this
         }
-        values.addAll(values);
+        values.addAll(values)
         byteInsertIndex=8;
+        return this
+    }
+    fun addByteToStream(value: UByte) : BitStream{
+        values.add(value)
+        return this
     }
     fun addToList(intToAdd: Int) {
         if(byteInsertIndex > 7){
@@ -77,6 +89,8 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(UByte.M
         }
         
     }
+
+
 
     fun saveToFile(fileName: String){
         val writer = PrintWriter(fileName)
