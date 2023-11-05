@@ -27,6 +27,7 @@ fun main() {
     print("Time (ms): " + time)
 
 //    bitstream.saveToFile("Aufgabe2b")
+    //LINK TO SPEC-> https://elearning.thws.de/pluginfile.php/2033910/mod_resource/content/0/JPG-Spezifikation.pdf
     //TODO:Segmente APP0 und SOF0 implementieren: APP0 -> länge des Sements(high byte, low byte) >= 16
     //TODO: + 1 Byte(1) + 1 Byte(1.1) +1 Byte(0) + high byte, low byte (0x0048) + high byte, low byte (0x0048) +1 Byte(0)
     //TODO: +1 Byte(0)
