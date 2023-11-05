@@ -1,4 +1,5 @@
 import JPGSegments.APP0
+import JPGSegments.SOF0
 import datatypes.BitStream
 import kotlin.random.Random
 import kotlin.system.measureTimeMillis
@@ -32,12 +33,23 @@ fun main() {
 
 //    bitstream.saveToFile("Aufgabe2b")
     //LINK TO SPEC-> https://elearning.thws.de/pluginfile.php/2033910/mod_resource/content/0/JPG-Spezifikation.pdf
-    //TODO:Segmente APP0 und SOF0 implementieren: APP0 -> länge des Sements(high byte, low byte) >= 16
-    //TODO: + 1 Byte(1) + 1 Byte(1.1) +1 Byte(0) + high byte, low byte (0x0048) + high byte, low byte (0x0048) +1 Byte(0)
-    //TODO: +1 Byte(0)
-    //TODO: SOFO -> länge des Sements(high byte, low byte) 8 + Anzahl Komponenten*3 + 1 Byte(8) + (2 Byte, Hi-Lo) >0 +
-    //TODO: (2 Byte, Hi-Lo) >0 + 1 Byte (Anzahl der Komponenten) + jede Komponente 3 Byte
     //VORSCHLAG KONTSTRUCTOREN für Segmente und mithilfe von Segmenten das JPG objekt zusammen bauen JPG(SEGMENT APP0, SEGMENT SOFO, etc.)
 
-    val app0 = APP0(1.toUByte(), 1.1.toUByte())
+    val app0 = APP0(1.toUByte(), 1.toUByte(), 0.toUByte(), 0.toUByte(), 0x48.toUByte(), 0.toUByte(), 0x48.toUByte())
+    val sof0 = SOF0(8.toUByte(), 0.toUByte(), 16.toUByte(), 0.toUByte(), 16.toUByte(), 1.toUByte(), arrayListOf(0x01.toUByte(), 0x22.toUByte(),
+   0.toUByte()))
+
+    //SOI
+    bitstream.addByteToStream(arrayListOf(0xff.toUByte(), 0xd8.toUByte()))
+
+    //APP0
+    bitstream.addBitStream(app0.getBitStream());
+
+    //SOF0
+    bitstream.addBitStream(sof0.getBitStream())
+
+    //EOI
+    bitstream.addByteToStream(arrayListOf(0xff.toUByte(), 0xd9.toUByte()))
+
+    bitstream.saveToFile("test.jpg")
 }
