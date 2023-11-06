@@ -2,6 +2,7 @@ package datatypes
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 
 class BitStreamTest {
@@ -49,9 +50,24 @@ class BitStreamTest {
         bitstream.addBitStream(bitstreamToAdd)
         assertEquals(bitstream, bitstreamToAdd)
 
+    }
 
+    @Test
+    fun addByte(){
+        val bitStreamFromBytes = BitStream()
+        val bitStreamFromBits = BitStream()
+        bitStreamFromBytes.addByteToStream(56.toUByte())
+        bitStreamFromBits.addToList(arrayListOf(0,0,1,1,1,0,0,0))
+        assertEquals(bitStreamFromBytes, bitStreamFromBits)
+    }
 
-
-
+    @Test
+    fun addBytes(){
+        val bitStreamFromBytes = BitStream()
+        val bitStreamFromBits = BitStream()
+        bitStreamFromBytes.addByteToStream(arrayListOf(56.toUByte(), 56.toUByte()))
+        bitStreamFromBits.addToList(arrayListOf(0,0,1,1,1,0,0,0,
+                                                0,0,1,1,1,0,0,0))
+        assertEquals(bitStreamFromBytes, bitStreamFromBits)
     }
 }

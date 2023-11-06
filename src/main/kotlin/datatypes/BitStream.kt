@@ -31,11 +31,12 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
             return this
         }
         this.values.addAll(values)
-        byteInsertIndex=0;
+        byteInsertIndex=8;
         return this
     }
     fun addByteToStream(value: UByte) : BitStream{
         values.add(value)
+        byteInsertIndex=8;
         return this
     }
     fun addToList(intToAdd: Int) {
@@ -44,7 +45,7 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
         }
         if(byteInsertIndex > 7){
             values.add((intToAdd shl 7).toUByte())
-            byteInsertIndex = 0
+            byteInsertIndex = 1
         } else {
             values[values.size - 1] = modifyByteAfterLastRelevantBit(getLastByte(), intToAdd)
             byteInsertIndex++
