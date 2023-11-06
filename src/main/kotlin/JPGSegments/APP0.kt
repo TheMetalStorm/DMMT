@@ -2,7 +2,7 @@ package JPGSegments
 
 import datatypes.BitStream
 
-data class APP0 (val majorRev: UByte, val minorRev: UByte, val densityUnits: UByte, val xDensityHigh: UByte, val xDensityLow: UByte,
+data class APP0(val majorRev: UByte, val minorRev: UByte, val densityUnits: UByte, val xDensityHigh: UByte, val xDensityLow: UByte,
             val yDensityHigh: UByte, val yDensityLow: UByte ) {
 
     private val bitStream = BitStream()
@@ -13,7 +13,7 @@ data class APP0 (val majorRev: UByte, val minorRev: UByte, val densityUnits: UBy
             .addByteToStream(arrayListOf(majorRev, minorRev, densityUnits, xDensityHigh, xDensityLow, yDensityHigh, yDensityLow, 0.toUByte(), 0.toUByte()))
     }
 
-    private fun checkInput(){
+    fun checkInput(){
         if(!arrayListOf(0x00.toUByte(), 0x01.toUByte(), 0x02.toUByte()).contains(densityUnits)){
             throw Exception("Density Units should be 0, 1 or 2")
         }

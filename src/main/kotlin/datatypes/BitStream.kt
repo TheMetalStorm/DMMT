@@ -44,7 +44,7 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
         }
         if(byteInsertIndex > 7){
             values.add((intToAdd shl 7).toUByte())
-            byteInsertIndex = 1
+            byteInsertIndex = 0
         } else {
             values[values.size - 1] = modifyByteAfterLastRelevantBit(getLastByte(), intToAdd)
             byteInsertIndex++

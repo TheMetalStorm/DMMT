@@ -36,4 +36,22 @@ class BitStreamTest {
             assertEquals(e.message.toString(), "Not every given value is 0 or 1. Please check your data")
         }
     }
+    @Test
+    fun addBitStream() {
+        val bitstream = BitStream()
+        val bitstreamToAdd = BitStream()
+        val listToAdd : ArrayList<Int> = arrayListOf()
+        for (i in 0..50000000) { //500000000 =  heapspace, 50000000 = ok
+            listToAdd.add(1)
+            listToAdd.add(0)
+        }
+        bitstreamToAdd.addToList(listToAdd)
+        bitstream.addBitStream(bitstreamToAdd)
+        assertEquals(bitstream, bitstreamToAdd)
+
+
+
+
+
+    }
 }
