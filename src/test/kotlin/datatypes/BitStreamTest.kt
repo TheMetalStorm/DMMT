@@ -2,7 +2,6 @@ package datatypes
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
 
 
 class BitStreamTest {
