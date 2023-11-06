@@ -41,13 +41,13 @@ fun main() {
     //SOI
     bitstream.addByteToStream(arrayListOf(0xffu, 0xd8u))
 
-//    //APP0
+    //APP0
     bitstream.addBitStream(app0.getBitStream());
 
-//    //SOF0
+    //SOF0
     bitstream.addBitStream(sof0.getBitStream())
 
-//    //EOI
+    //EOI
     bitstream.addByteToStream(arrayListOf(0xffu, 0xd9u))
 
     bitstream.printBits()

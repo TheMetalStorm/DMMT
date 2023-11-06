@@ -6,10 +6,11 @@ import kotlin.test.assertNotEquals
 
 
 class BitStreamTest {
+
     @Test
     fun addToList() {
         val bitstream = BitStream()
-        val listToAdd : ArrayList<Int> = arrayListOf(0,1,1,1,1,1,0,1) //125 -> 1111101
+        val listToAdd : ArrayList<Int> = arrayListOf(0,1,1,1,1,1,0,1)   //125 -> 1111101
         bitstream.addToList(listToAdd)
         val testInt = 125
         assertEquals(bitstream, BitStream(arrayListOf(testInt.toUByte()),8))
@@ -42,7 +43,7 @@ class BitStreamTest {
         val bitstream = BitStream()
         val bitstreamToAdd = BitStream()
         val listToAdd : ArrayList<Int> = arrayListOf()
-        for (i in 0..50000000) { //500000000 =  heapspace, 50000000 = ok
+        for (i in 0..50000000) {    //500000000 =  heapspace, 50000000 = ok
             listToAdd.add(1)
             listToAdd.add(0)
         }
@@ -57,7 +58,7 @@ class BitStreamTest {
         val bitStreamFromBytes = BitStream()
         val bitStreamFromBits = BitStream()
         bitStreamFromBytes.addByteToStream(56u)
-        bitStreamFromBits.addToList(arrayListOf(0,0,1,1,1,0,0,0))
+        bitStreamFromBits.addToList(arrayListOf(0,0,1,1,1,0,0,0))   //56 in Binary
         assertEquals(bitStreamFromBytes, bitStreamFromBits)
     }
 
@@ -66,8 +67,8 @@ class BitStreamTest {
         val bitStreamFromBytes = BitStream()
         val bitStreamFromBits = BitStream()
         bitStreamFromBytes.addByteToStream(arrayListOf(56u, 56u))
-        bitStreamFromBits.addToList(arrayListOf(0,0,1,1,1,0,0,0,
-                                                0,0,1,1,1,0,0,0))
+        bitStreamFromBits.addToList(arrayListOf(0,0,1,1,1,0,0,0,    //56 in Binary
+                                                0,0,1,1,1,0,0,0))   //56 in Binary
         assertEquals(bitStreamFromBytes, bitStreamFromBits)
     }
 }
