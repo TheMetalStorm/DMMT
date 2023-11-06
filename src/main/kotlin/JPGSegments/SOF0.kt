@@ -12,7 +12,7 @@ data class SOF0 (val dataAccuracy:UByte,val pictureSizeYHigh: UByte,val pictureS
         val lengthLow = length.toUByte()
         val lengthHigh = (length.toInt() shr 8).toUByte()
 
-        bitStream.addBitStream(BitStream(arrayListOf(0xff.toUByte(),0xc0.toUByte(), lengthHigh, lengthLow,
+        bitStream.addBitStream(BitStream(arrayListOf(0xffu,0xc0u, lengthHigh, lengthLow,
             dataAccuracy, pictureSizeYHigh, pictureSizeYLow, pictureSizeXHigh, pictureSizeXLow, componentCount)))
         bitStream.addByteToStream(components)
     }

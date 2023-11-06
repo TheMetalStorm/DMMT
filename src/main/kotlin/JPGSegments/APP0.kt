@@ -9,8 +9,8 @@ data class APP0(val majorRev: UByte, val minorRev: UByte, val densityUnits: UByt
 
     init {
         checkInput()
-        bitStream.addByteToStream(arrayListOf(0xff.toUByte(),0xe0.toUByte(), 0.toUByte(), 16.toUByte(), 0x4a.toUByte(), 0x46.toUByte(), 0x49.toUByte(), 0x46.toUByte(), 0x00.toUByte()))
-            .addByteToStream(arrayListOf(majorRev, minorRev, densityUnits, xDensityHigh, xDensityLow, yDensityHigh, yDensityLow, 0.toUByte(), 0.toUByte()))
+        bitStream.addByteToStream(arrayListOf(0xffu,0xe0u, 0u, 16u, 0x4au, 0x46u, 0x49u, 0x46u, 0x00u))
+            .addByteToStream(arrayListOf(majorRev, minorRev, densityUnits, xDensityHigh, xDensityLow, yDensityHigh, yDensityLow, 0u, 0u))
     }
 
     fun checkInput(){

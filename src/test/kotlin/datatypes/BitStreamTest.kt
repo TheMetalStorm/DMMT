@@ -56,7 +56,7 @@ class BitStreamTest {
     fun addByte(){
         val bitStreamFromBytes = BitStream()
         val bitStreamFromBits = BitStream()
-        bitStreamFromBytes.addByteToStream(56.toUByte())
+        bitStreamFromBytes.addByteToStream(56u)
         bitStreamFromBits.addToList(arrayListOf(0,0,1,1,1,0,0,0))
         assertEquals(bitStreamFromBytes, bitStreamFromBits)
     }
@@ -65,7 +65,7 @@ class BitStreamTest {
     fun addBytes(){
         val bitStreamFromBytes = BitStream()
         val bitStreamFromBits = BitStream()
-        bitStreamFromBytes.addByteToStream(arrayListOf(56.toUByte(), 56.toUByte()))
+        bitStreamFromBytes.addByteToStream(arrayListOf(56u, 56u))
         bitStreamFromBits.addToList(arrayListOf(0,0,1,1,1,0,0,0,
                                                 0,0,1,1,1,0,0,0))
         assertEquals(bitStreamFromBytes, bitStreamFromBits)

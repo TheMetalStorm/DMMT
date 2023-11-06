@@ -34,12 +34,12 @@ fun main() {
     //VORSCHLAG KONTSTRUCTOREN für Segmente und mithilfe von Segmenten das JPG objekt zusammen bauen JPG(SEGMENT APP0, SEGMENT SOFO, etc.)
 
     //helpful: https://mykb.cipindanci.com/archive/SuperKB/1294/JPEG%20File%20Layout%20and%20Format.htm
-    val app0 = APP0(1.toUByte(), 1.toUByte(), 0.toUByte(), 0.toUByte(), 0x48.toUByte(), 0.toUByte(), 0x48.toUByte())
-    val sof0 = SOF0(8.toUByte(), 0.toUByte(), 16.toUByte(), 0.toUByte(), 16.toUByte(), 1.toUByte(), arrayListOf(0x01.toUByte(), 0x22.toUByte(),
-   0.toUByte()))
+    val app0 = APP0(1u, 1u, 0u, 0u, 0x48u, 0u, 0x48u)
+    val sof0 = SOF0(8u, 0u, 16u, 0u, 16u, 1u,
+        arrayListOf(0x01u, 0x22u, 0u))
 
     //SOI
-    bitstream.addByteToStream(arrayListOf(0xff.toUByte(), 0xd8.toUByte()))
+    bitstream.addByteToStream(arrayListOf(0xffu, 0xd8u))
 
 //    //APP0
     bitstream.addBitStream(app0.getBitStream());
@@ -48,7 +48,7 @@ fun main() {
     bitstream.addBitStream(sof0.getBitStream())
 
 //    //EOI
-    bitstream.addByteToStream(arrayListOf(0xff.toUByte(), 0xd9.toUByte()))
+    bitstream.addByteToStream(arrayListOf(0xffu, 0xd9u))
 
     bitstream.printBits()
 
