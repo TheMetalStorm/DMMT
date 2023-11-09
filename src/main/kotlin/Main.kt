@@ -1,6 +1,7 @@
 import JPGSegments.APP0
 import JPGSegments.SOF0
 import datatypes.BitStream
+import Huffman
 
 fun main() {
 //    val image = ImageRGB.readPPM("src/main/image.ppm", 8, 8)
@@ -38,19 +39,22 @@ fun main() {
     val sof0 = SOF0(8u, 0u, 16u, 0u, 16u, 1u,
         arrayListOf(0x01u, 0x22u, 0u))
 
-    //SOI
-    bitstream.addByteToStream(arrayListOf(0xffu, 0xd8u))
+//    //SOI
+//    bitstream.addByteToStream(arrayListOf(0xffu, 0xd8u))
+//
+//    //APP0
+//    bitstream.addBitStream(app0.getBitStream());
+//
+//    //SOF0
+//    bitstream.addBitStream(sof0.getBitStream())
+//
+//    //EOI
+//    bitstream.addByteToStream(arrayListOf(0xffu, 0xd9u))
+//
+//    bitstream.printBits()
+//
+//    bitstream.saveToFileAsBytes("test.jpeg")
 
-    //APP0
-    bitstream.addBitStream(app0.getBitStream());
-
-    //SOF0
-    bitstream.addBitStream(sof0.getBitStream())
-
-    //EOI
-    bitstream.addByteToStream(arrayListOf(0xffu, 0xd9u))
-
-    bitstream.printBits()
-
-    bitstream.saveToFileAsBytes("test.jpeg")
+    val huffman = Huffman(intArrayOf('a'.code, 'b'.code, 'c'.code, 'd'.code))
+    huffman.encode("abbcddddd".toCharArray().map { it.code }.toIntArray())
 }
