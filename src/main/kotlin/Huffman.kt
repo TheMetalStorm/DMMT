@@ -5,21 +5,53 @@ import java.util.*
 data class Huffman (val symbols: IntArray) {
 
     fun encode(toEncode: IntArray): HufEncode{
-        val tree = createTree(toEncode)
+        val sortedOccurences = getOccurences(toEncode)
+        val tree = createTree(toEncode, PriorityQueue(sortedOccurences))
+        //TODO: create dictionary which maps the symbols(Int) to binary codes(bitstream)
+        val symbolToBitstreamMap = getSymbolToBitstreamMap(tree, sortedOccurences)
         val encoded = BitStream()
         for (symbol in toEncode) {
-            encoded.addBitStream(findHufmannCode(symbol,tree))
+            //TODO: use dictionary to add to Bitstream
+            symbolToBitstreamMap.get(symbol)?.let { encoded.addBitStream(it) }
         }
-        return HufEncode(encoded, tree)
+        return HufEncode(encoded, symbolToBitstreamMap)
     }
 
-    private fun findHufmannCode(symbol: Int, tree: TreeNode<HufNode>): BitStream {
-        TODO("Not yet implemented")
+    private fun getSymbolToBitstreamMap(tree: TreeNode<HufNode>, sortedOccurences: PriorityQueue<TreeNode<HufNode>>): HashMap<Int, BitStream> {
+        var result: HashMap<Int, BitStream> = hashMapOf()
+        while (sortedOccurences.isNotEmpty()){
+            val currentSymbol = sortedOccurences.poll().value.symbol
+            val bitstreamForSymbol = BitStream()
+            result.put(currentSymbol, getBitstreamFromTree(currentSymbol, tree, bitstreamForSymbol, 0))
+        }
+        return result;
     }
 
-    private fun createTree(toEncode: IntArray): TreeNode<HufNode> {
+    //TODO: does not work rn
+    private fun getBitstreamFromTree(currentSymbol: Int, tree: TreeNode<HufNode>, bitstreamForSymbol: BitStream, curBit: Int) : BitStream{
 
-        val sortedOccurences = getOccurences(toEncode)
+        if(tree.children.isNotEmpty()){
+            bitstreamForSymbol.addToList(1)
+            getBitstreamFromTree(currentSymbol, tree.children[1], bitstreamForSymbol, curBit + 1 );
+            bitstreamForSymbol.revert()
+
+            bitstreamForSymbol.addToList(0)
+            getBitstreamFromTree(currentSymbol, tree.children[0], bitstreamForSymbol, curBit + 1 );
+            bitstreamForSymbol.revert()
+        }
+
+        if(tree.children.isEmpty() && currentSymbol == tree.value.symbol){
+            bitstreamForSymbol.removeBytesNotNeededAfterIndex(curBit)
+            bitstreamForSymbol.byteInsertIndex = curBit + 1
+            return bitstreamForSymbol;
+        }
+
+        return BitStream()
+    }
+
+
+    private fun createTree(toEncode: IntArray, sortedOccurences: PriorityQueue<TreeNode<HufNode>>): TreeNode<HufNode> {
+
         while (sortedOccurences.size != 1){
             val one = sortedOccurences.poll();
             val two = sortedOccurences.poll();
@@ -51,4 +83,4 @@ data class Huffman (val symbols: IntArray) {
 }
 
 data class HufNode(val symbol: Int, val frequency: Int)
-data class HufEncode(val encodedMessage: BitStream, val hufmannTree: TreeNode<HufNode>)
+data class HufEncode(val encodedMessage: BitStream, val symbolToCodeMap: HashMap<Int, BitStream>)

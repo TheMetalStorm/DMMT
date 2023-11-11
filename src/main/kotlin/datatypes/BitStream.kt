@@ -63,21 +63,57 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
     fun getBit(index: Int): Int {
         val byteIndex = index / 8
         val bitIndex = index % 8
+
         val bit = getByte(byteIndex).toInt() shr (7 - bitIndex) and 1
         return bit
     }
 
+    //COMMENT: FUCKS WITH TIME CONTINOUM (ByteInsertIndex)
+    fun setBit(index: Int, bitToAdd: Int) {
+        if(values.size == 0){
+            values.add(0u)
+        }
+        val byteIndex = index / 8
+        val bitIndex = index % 8
+
+        while(values.size-1 < byteIndex){
+            values.add(0u)
+        }
+
+        values[byteIndex] = calculateModifiedByte(values[byteIndex].toInt(), bitIndex, bitToAdd).toUByte()
+
+    }
+
+    //TODO: WRITE TEST
+    fun revert(){
+        if(byteInsertIndex == 0)
+            return
+
+        if(byteInsertIndex == 1) {
+            if (values.size == 0) {
+                byteInsertIndex = 0
+            }
+            else {
+                values.removeLast()
+                byteInsertIndex = 8
+            }
+        }
+        else{
+            byteInsertIndex--
+        }
+    }
+
      fun modifyByteAfterLastRelevantBit(byteToModify: UByte, bitToAdd: Int): UByte {
         var result: Int = byteToModify.toInt()
-        result = calculateModifiedByte(result, bitToAdd)
+        result = calculateModifiedByte(result, byteInsertIndex, bitToAdd)
         return result.toUByte()
     }
 
-    private fun calculateModifiedByte(byteToModify: Int, bit: Int): Int {
-        val shiftToRelevantBit = 7 - byteInsertIndex
+    private fun calculateModifiedByte(byteToModify: Int, bitToModify: Int, bit: Int): Int {
+        val shiftToRelevantBit = 7 - bitToModify
         if(bit == 1)
-            return byteToModify or (bit shl shiftToRelevantBit)
-        return byteToModify and (bit shl shiftToRelevantBit).inv()
+            return byteToModify or (1 shl shiftToRelevantBit)
+        return byteToModify and (1 shl shiftToRelevantBit).inv()
     }
 
     private fun checkNumbersToParse(valuesToAdd: ArrayList<Int>) {
@@ -141,5 +177,16 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
         return result
     }
 
+    //TODO: WRITE TEST
+    fun removeBytesNotNeededAfterIndex(index: Int) {
+        val byteIndex = index / 8
+        val bitIndex = index % 8
+
+        while(values.size-1 > byteIndex){
+            values.removeLast()
+        }
+
+        byteInsertIndex = bitIndex+1
+    }
 }
 

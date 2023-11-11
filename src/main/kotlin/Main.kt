@@ -1,7 +1,6 @@
 import JPGSegments.APP0
 import JPGSegments.SOF0
 import datatypes.BitStream
-import Huffman
 
 fun main() {
 //    val image = ImageRGB.readPPM("src/main/image.ppm", 8, 8)
@@ -56,5 +55,8 @@ fun main() {
 //    bitstream.saveToFileAsBytes("test.jpeg")
 
     val huffman = Huffman(intArrayOf('a'.code, 'b'.code, 'c'.code, 'd'.code))
-    huffman.encode("abbcddddd".toCharArray().map { it.code }.toIntArray())
+    val (encodedMessage, symbolToCodeMap) = huffman.encode("abbcddddd".toCharArray().map { it.code }.toIntArray())
+    encodedMessage.printBits()
+
+
 }
