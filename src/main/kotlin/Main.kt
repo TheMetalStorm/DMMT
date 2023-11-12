@@ -54,9 +54,27 @@ fun main() {
 //
 //    bitstream.saveToFileAsBytes("test.jpeg")
 
-    val huffman = Huffman(intArrayOf('a'.code, 'b'.code, 'c'.code, 'd'.code))
-    val (encodedMessage, symbolToCodeMap) = huffman.encode("abbcddddd".toCharArray().map { it.code }.toIntArray())
-    encodedMessage.printBits()
+    val huffman = Huffman(intArrayOf('A'.code, 'B'.code, 'C'.code, 'D'.code, 'E'.code, 'F'.code))
+    val originalMessage = "AAAABBBBCCCCCCDDDDDDEEEEEEEFFFFFFFFF"
+    val (encodedMessage, symbolToCodeMap) = huffman.encode(originalMessage.toCharArray().map { it.code }.toIntArray())
 
+    for (symbol in symbolToCodeMap) {
+        val c = symbol.key
+        val bs = symbol.value
+        println("Symbol: $c")
+        bs.printBits()
+        println(bs)
+        println()
+    }
+
+    encodedMessage.printBits()
+    println()
+    val array = huffman.decode(HufEncode(encodedMessage, symbolToCodeMap))
+    print("Original: ")
+    println(originalMessage)
+    print("Decoded:  ")
+    for (i in array) {
+        print(Char(i))
+    }
 
 }

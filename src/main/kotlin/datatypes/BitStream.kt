@@ -22,6 +22,34 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
             this.values.addAll(streamToAdd.values)
             this.byteInsertIndex = (this.byteInsertIndex + streamToAdd.byteInsertIndex)%7
     }
+
+    fun getAllBytes (): ArrayList<UByte>{
+        return values
+    }
+
+    /**
+     * This methode adds the contents of a Bitstreams to the end of our Bitstream
+     * by adding single bytes until we hit the byteInsertIndex in the last byte
+     */
+    fun addBitStreamUntilByteInsertIndex(streamToAdd: BitStream) {
+
+
+        for ((index, uByte) in streamToAdd.values.withIndex()) {
+            if(index != streamToAdd.values.size-1){
+                for(j in (0..7))
+                this.addToList(uByte.getBit(j))
+            }
+            else{
+                if(streamToAdd.byteInsertIndex == 0)
+                    return
+                for(j in (0..<streamToAdd.byteInsertIndex)){
+                    this.addToList(uByte.getBit(j))
+                }
+            }
+        }
+    }
+
+
     /**
      * This method adds a uByteArray to the end of the Bitstream, it does not change existing byte.
      * It only adds and set the new index to 8.
@@ -86,17 +114,14 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
 
     //TODO: WRITE TEST
     fun revert(){
-        if(byteInsertIndex == 0)
-            return
 
-        if(byteInsertIndex == 1) {
-            if (values.size == 0) {
-                byteInsertIndex = 0
-            }
-            else {
-                values.removeLast()
-                byteInsertIndex = 8
-            }
+        if (byteInsertIndex == 0){
+            return
+        }
+
+        if (byteInsertIndex % 7 == 1 && byteInsertIndex>7){
+            values.removeLast()
+            byteInsertIndex = 7
         }
         else{
             byteInsertIndex--
@@ -156,7 +181,7 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
     }
 
     fun UByte.getBit(position: Int): Int {
-        return (this.toInt() shr position) and 1;
+        return (this.toInt() shr (7 - position) and 1)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -187,6 +212,11 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
         }
 
         byteInsertIndex = bitIndex+1
+
+        for(i in (index..<values.size * 8)){
+            setBit(i, 0)
+            byteInsertIndex = bitIndex+1
+        }
     }
 }
 
