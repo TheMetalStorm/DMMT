@@ -111,10 +111,7 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
         values[byteIndex] = calculateModifiedByte(values[byteIndex].toInt(), bitIndex, bitToAdd).toUByte()
 
     }
-
-    //TODO: WRITE TEST
     fun revert(){
-
         if (byteInsertIndex == 0){
             return
         }
