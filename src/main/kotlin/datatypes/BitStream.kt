@@ -96,7 +96,7 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
         return bit
     }
 
-    //COMMENT: FUCKS WITH TIME CONTINOUM (ByteInsertIndex)
+    //COMMENT: MESSESS WITH TIME CONTINOUM (ByteInsertIndex)
     fun setBit(index: Int, bitToAdd: Int) {
         if(values.size == 0){
             values.add(0u)
@@ -118,7 +118,6 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
         if (byteInsertIndex == 0){
             return
         }
-
         if (byteInsertIndex % 7 == 1 && byteInsertIndex>7){
             values.removeLast()
             byteInsertIndex = 7
@@ -215,8 +214,8 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
 
         for(i in (index..<values.size * 8)){
             setBit(i, 0)
-            byteInsertIndex = bitIndex+1
         }
+        byteInsertIndex = bitIndex+1
     }
 }
 
