@@ -198,6 +198,10 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
         return result
     }
 
+    /**
+     * This method sets first removes all bytes that occur after the byte containing the index and then
+     * sets bits to zero starting from bit at index-position
+     */
     fun removeBitsNotNeededStartFromIndex(index: Int) {
         val byteIndex = index / 8
         val bitIndex = index % 8
