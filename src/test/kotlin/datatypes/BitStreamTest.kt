@@ -1,5 +1,6 @@
 package datatypes
 
+import Huffman
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -122,5 +123,23 @@ class BitStreamTest {
         assertEquals(bitStreamA, bitStreamB)
 
 
+    }
+
+    @Test
+    fun GetOccurrences() {
+
+        val inputArray = intArrayOf(1, 2, 2, 3, 3, 3)
+        val yourInstance = Huffman(inputArray)
+        val resultQueue = yourInstance.getOccurences(inputArray)
+
+
+        val expectedOrder = listOf(1, 2, 2, 3, 3, 3)
+        val actualOrder = mutableListOf<Int>()
+
+        while (resultQueue.isNotEmpty()) {
+            actualOrder.add(resultQueue.poll().value.symbol)
+        }
+
+        assertEquals(expectedOrder, actualOrder)
     }
 }
