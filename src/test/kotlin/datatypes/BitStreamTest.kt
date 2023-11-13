@@ -1,11 +1,8 @@
 package datatypes
 
-import Huffman
-import NodeData
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 
 class BitStreamTest {
@@ -76,20 +73,54 @@ class BitStreamTest {
     }
 
     @Test
-    fun testGetOccurrences() {
+    fun revert() {
+        val testStream = BitStream()
+        testStream.addToList(arrayListOf(1,0,1))
+        testStream.revert()
+        val byteInsertToBe = 2
+        assertEquals(testStream.byteInsertIndex, byteInsertToBe)
+    }
 
-        val inputArray = intArrayOf(1, 2, 2, 3, 3, 3)
-        val yourInstance = Huffman(inputArray)
-        val resultQueue = yourInstance.getOccurences(inputArray)
+    @Test
+    fun revertWithZero() {
+        val testStream = BitStream()
+        testStream.revert()
+        val byteInsertToBe = 0
+        assertEquals(testStream.byteInsertIndex, byteInsertToBe)
+    }
 
-
-        val expectedOrder = listOf(1, 2, 2, 3, 3, 3) // Hier musst du die erwartete Reihenfolge der Symbole basierend auf der Frequenz angeben
-        val actualOrder = mutableListOf<Int>()
-
-        while (resultQueue.isNotEmpty()) {
-            actualOrder.add(resultQueue.poll().value.symbol)
+    @Test
+    fun revertWithEight() {
+        val testStream = BitStream()
+        testStream.addToList(arrayListOf(1,0,1,1,1,0,0,1))
+        testStream.revert()
+        val byteInsertToBe = 7
+        assertEquals(testStream.byteInsertIndex, byteInsertToBe)
+    }
+    @Test
+    fun revertWith567() {
+        val testStream = BitStream()
+        for(i in 0 ..567 step 2){
+            testStream.addToList(arrayListOf(1,0))
         }
+        testStream.revert()
+        val byteInsertToBe = 566%8
+        assertNotEquals(testStream.byteInsertIndex, byteInsertToBe)
+    }
 
-        assertEquals(expectedOrder, actualOrder)
+    @Test
+    fun removeBitsNotNeededStartFromIndexTest(){
+        val bitStreamA = BitStream()
+        val bitStreamB = BitStream()
+
+        //Byte
+        bitStreamA.addToList(arrayListOf(0, 1, 1, 1))
+        bitStreamA.removeBitsNotNeededStartFromIndex(3)
+
+        bitStreamB.addToList(arrayListOf(0, 1, 1))
+
+        assertEquals(bitStreamA, bitStreamB)
+
+
     }
 }
