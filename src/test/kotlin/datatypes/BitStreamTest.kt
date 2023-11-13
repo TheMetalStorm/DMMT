@@ -78,4 +78,21 @@ class BitStreamTest {
         val byteInsertToBe = 2
         assertEquals(testStream.byteInsertIndex, byteInsertToBe)
     }
+
+    @Test
+    fun revertWithZero() {
+        val testStream = BitStream()
+        testStream.revert()
+        val byteInsertToBe = 0
+        assertEquals(testStream.byteInsertIndex, byteInsertToBe)
+    }
+
+    @Test
+    fun revertWithEight() {
+        val testStream = BitStream()
+        testStream.addToList(arrayListOf(1,0,1,1,1,0,0,1))
+        testStream.revert()
+        val byteInsertToBe = 7
+        assertEquals(testStream.byteInsertIndex, byteInsertToBe)
+    }
 }
