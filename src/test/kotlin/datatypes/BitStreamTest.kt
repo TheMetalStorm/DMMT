@@ -51,7 +51,6 @@ class BitStreamTest {
         assertEquals(bitstream, bitstreamToAdd)
 
     }
-
     @Test
     fun addByte(){
         val bitStreamFromBytes = BitStream()
@@ -69,5 +68,14 @@ class BitStreamTest {
         bitStreamFromBits.addToList(arrayListOf(0,0,1,1,1,0,0,0,    //56 in Binary
                                                 0,0,1,1,1,0,0,0))   //56 in Binary
         assertEquals(bitStreamFromBytes, bitStreamFromBits)
+    }
+
+    @Test
+    fun revert() {
+        val testStream = BitStream()
+        testStream.addToList(arrayListOf(1,0,1))
+        testStream.revert()
+        val byteInsertToBe = 2
+        assertEquals(testStream.byteInsertIndex, byteInsertToBe)
     }
 }
