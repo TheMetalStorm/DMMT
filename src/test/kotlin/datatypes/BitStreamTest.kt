@@ -1,5 +1,9 @@
 package datatypes
 
+import Huffman
+import NodeData
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -69,5 +73,23 @@ class BitStreamTest {
         bitStreamFromBits.addToList(arrayListOf(0,0,1,1,1,0,0,0,    //56 in Binary
                                                 0,0,1,1,1,0,0,0))   //56 in Binary
         assertEquals(bitStreamFromBytes, bitStreamFromBits)
+    }
+
+    @Test
+    fun testGetOccurrences() {
+
+        val inputArray = intArrayOf(1, 2, 2, 3, 3, 3)
+        val yourInstance = Huffman(inputArray)
+        val resultQueue = yourInstance.getOccurences(inputArray)
+
+
+        val expectedOrder = listOf(1, 2, 2, 3, 3, 3) // Hier musst du die erwartete Reihenfolge der Symbole basierend auf der Frequenz angeben
+        val actualOrder = mutableListOf<Int>()
+
+        while (resultQueue.isNotEmpty()) {
+            actualOrder.add(resultQueue.poll().value.symbol)
+        }
+
+        assertEquals(expectedOrder, actualOrder)
     }
 }

@@ -71,7 +71,7 @@ data class Huffman (val symbols: IntArray) {
         return sortedOccurences.poll();
     }
 
-    private fun getOccurences(toEncode: IntArray): PriorityQueue<TreeNode<NodeData>> {
+    fun getOccurences(toEncode: IntArray): PriorityQueue<TreeNode<NodeData>> {
         val occurences = PriorityQueue<TreeNode<NodeData>> { node1, node2 ->
             node1.value.frequency - node2.value.frequency
         }
