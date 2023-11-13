@@ -96,7 +96,7 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
         return bit
     }
 
-    //COMMENT: MESSESS WITH TIME CONTINOUM (ByteInsertIndex)
+    //COMMENT: MESSES WITH TIME CONTINUUM (ByteInsertIndex)
     fun setBit(index: Int, bitToAdd: Int) {
         if(values.size == 0){
             values.add(0u)
