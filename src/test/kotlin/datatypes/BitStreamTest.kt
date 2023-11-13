@@ -113,25 +113,18 @@ class BitStreamTest {
     fun removeBitsNotNeededStartFromIndexTest(){
         val bitStreamA = BitStream()
         val bitStreamB = BitStream()
-
         //Byte
         bitStreamA.addToList(arrayListOf(0, 1, 1, 1))
         bitStreamA.removeBitsNotNeededStartFromIndex(3)
 
         bitStreamB.addToList(arrayListOf(0, 1, 1))
-
         assertEquals(bitStreamA, bitStreamB)
-
-
     }
-
     @Test
-    fun GetOccurrences() {
-
+    fun getOccurrences() {
         val inputArray = intArrayOf(1, 2, 2, 3, 3, 3)
         val yourInstance = Huffman(inputArray)
         val resultQueue = yourInstance.getOccurences(inputArray)
-
 
         val expectedOrder = listOf(1, 2, 2, 3, 3, 3)
         val actualOrder = mutableListOf<Int>()
