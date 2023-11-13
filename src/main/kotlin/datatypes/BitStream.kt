@@ -201,8 +201,7 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
         return result
     }
 
-    //TODO: WRITE TEST
-    fun removeBytesNotNeededAfterIndex(index: Int) {
+    fun removeBitsNotNeededStartFromIndex(index: Int) {
         val byteIndex = index / 8
         val bitIndex = index % 8
 
@@ -210,12 +209,10 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
             values.removeLast()
         }
 
-        byteInsertIndex = bitIndex+1
-
         for(i in (index..<values.size * 8)){
             setBit(i, 0)
         }
-        byteInsertIndex = bitIndex+1
+        byteInsertIndex = bitIndex
     }
 }
 

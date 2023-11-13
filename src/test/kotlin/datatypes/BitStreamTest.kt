@@ -70,4 +70,20 @@ class BitStreamTest {
                                                 0,0,1,1,1,0,0,0))   //56 in Binary
         assertEquals(bitStreamFromBytes, bitStreamFromBits)
     }
+
+    @Test
+    fun removeBitsNotNeededStartFromIndexTest(){
+        val bitStreamA = BitStream()
+        val bitStreamB = BitStream()
+
+        //Byte
+        bitStreamA.addToList(arrayListOf(0, 1, 1, 1))
+        bitStreamA.removeBitsNotNeededStartFromIndex(3)
+
+        bitStreamB.addToList(arrayListOf(0, 1, 1))
+
+        assertEquals(bitStreamA, bitStreamB)
+
+
+    }
 }

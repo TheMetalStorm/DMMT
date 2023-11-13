@@ -30,7 +30,7 @@ data class Huffman (val symbols: IntArray) {
         if (tree.children.isEmpty()) {
             if (currentSymbol == tree.value.symbol) {
                 // Found the symbol, so trim the bitstream and set the insert index
-                bitstreamForSymbol.removeBytesNotNeededAfterIndex(curBit)
+                bitstreamForSymbol.removeBitsNotNeededStartFromIndex(curBit)
                 bitstreamForSymbol.byteInsertIndex = curBit
                 return bitstreamForSymbol
             } else {
