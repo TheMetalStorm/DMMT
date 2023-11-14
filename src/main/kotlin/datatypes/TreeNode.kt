@@ -1,20 +1,18 @@
 package datatypes
 
-class TreeNode<T>(value:T){
-    var value:T = value
-    var parent: TreeNode<T>? = null
+data class TreeNode(val symbol: Int, val frequency: Int, val depth: Int){
+    var parent: TreeNode? = null
 
-    var children:MutableList<TreeNode<T>> = mutableListOf()
+    var children:MutableList<TreeNode> = mutableListOf()
 
-    fun addChild(node: TreeNode<T>){
+    fun addChild(node: TreeNode){
         children.add(node)
         node.parent = this
     }
+
     override fun toString(): String {
-        var s = "${value}"
-        if (!children.isEmpty()) {
-            s += " {" + children.map { it.toString() } + " }"
-        }
-        return s
+        return "TreeNode(symbol=$symbol, frequency=$frequency, depth=$depth)"
     }
+
+
 }
