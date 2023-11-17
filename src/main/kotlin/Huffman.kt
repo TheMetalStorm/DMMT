@@ -80,14 +80,6 @@ data class Huffman (val symbols: IntArray) {
         newRoot.largestAmountOfStepsToLeaf = oldRoot.largestAmountOfStepsToLeaf + 1
     }
 
-    private fun updateRootDepths(treeNode: TreeNode) {
-        treeNode.largestAmountOfStepsToLeaf+=1
-        if(treeNode.children.size != 0){
-            updateRootDepths(treeNode.children[0])
-            updateRootDepths(treeNode.children[1])
-        }
-    }
-
     fun getOccurences(toEncode: IntArray): PriorityQueue<TreeNode> {
         val occurences = PriorityQueue(Comparator.comparing (TreeNode::largestAmountOfStepsToLeaf).thenComparing(TreeNode::frequency))
         for (symbol in symbols) {
