@@ -15,20 +15,20 @@ data class Huffman (val symbols: IntArray) {
         return HufEncode(encoded, symbolToBitstreamMap)
     }
 
-    private fun getSymbolToBitstreamMap(tree: TreeNode<NodeData>, sortedOccurences: PriorityQueue<TreeNode<NodeData>>): HashMap<Int, BitStream> {
+    private fun getSymbolToBitstreamMap(tree: TreeNode, sortedOccurences: PriorityQueue<TreeNode>): HashMap<Int, BitStream> {
         var result: HashMap<Int, BitStream> = hashMapOf()
         while (sortedOccurences.isNotEmpty()){
-            val currentSymbol = sortedOccurences.poll().value.symbol
+            val currentSymbol = sortedOccurences.poll().symbol
             val bitstreamForSymbol = BitStream()
             result.put(currentSymbol, getBitstreamFromTree(currentSymbol, tree, bitstreamForSymbol, 0))
         }
         return result;
     }
 
-    private fun getBitstreamFromTree(currentSymbol: Int, tree: TreeNode<NodeData>, bitstreamForSymbol: BitStream, curBit: Int) : BitStream {
+    private fun getBitstreamFromTree(currentSymbol: Int, tree: TreeNode, bitstreamForSymbol: BitStream, curBit: Int) : BitStream {
         // Check if current node is a leaf and contains the symbol we're looking for
         if (tree.children.isEmpty()) {
-            if (currentSymbol == tree.value.symbol) {
+            if (currentSymbol == tree.symbol) {
                 // Found the symbol, so trim the bitstream and set the insert index
                 bitstreamForSymbol.removeBytesNotNeededAfterIndex(curBit)
                 bitstreamForSymbol.byteInsertIndex = curBit
@@ -59,18 +59,13 @@ data class Huffman (val symbols: IntArray) {
     }
 
 
-    private fun createTree(sortedOccurences: PriorityQueue<TreeNode<NodeData>>): TreeNode<NodeData> {
+    private fun createTree(sortedOccurences: PriorityQueue<TreeNode>): TreeNode {
         while (sortedOccurences.size != 1){
-<<<<<<< Updated upstream
             val one = sortedOccurences.poll();
             val two = sortedOccurences.poll();
-            var currentNode: TreeNode<NodeData> = TreeNode(NodeData(Integer.MIN_VALUE, one.value.frequency + two.value.frequency));
-=======
-            val one = sortedOccurences.poll()
-            val two = sortedOccurences.poll()
+
             //TODO: depth?
             var currentNode: TreeNode = TreeNode(Int.MIN_VALUE, one.frequency + two.frequency, Math.max(one.depth, two.depth)+1);
->>>>>>> Stashed changes
             currentNode.addChild(one)
             currentNode.addChild(two)
             sortedOccurences.add(currentNode)
@@ -95,19 +90,14 @@ data class Huffman (val symbols: IntArray) {
         }
     }
 
-    private fun getOccurences(toEncode: IntArray): PriorityQueue<TreeNode<NodeData>> {
-        val occurences = PriorityQueue<TreeNode<NodeData>> { node1, node2 ->
-            node1.value.frequency - node2.value.frequency
+    private fun getOccurences(toEncode: IntArray): PriorityQueue<TreeNode> {
+        //TODO: sort by depth too
+        val occurences = PriorityQueue<TreeNode> { node1, node2 ->
+            node1.frequency - node2.frequency
         }
         for (symbol in symbols) {
             val numOccurences = toEncode.filter { it == symbol }.size
-<<<<<<< Updated upstream
-
-            //save to Map
-            occurences.add(TreeNode(NodeData(symbol, numOccurences)))
-=======
             occurences.add(TreeNode(symbol, numOccurences, 0))
->>>>>>> Stashed changes
         }
         return occurences
     }
@@ -134,6 +124,4 @@ data class Huffman (val symbols: IntArray) {
         return  returnMessage.toIntArray()
     }
 }
-
-data class NodeData(val symbol: Int, val frequency: Int)
 data class HufEncode(val encodedMessage: BitStream, val symbolToCodeMap: HashMap<Int, BitStream>)
