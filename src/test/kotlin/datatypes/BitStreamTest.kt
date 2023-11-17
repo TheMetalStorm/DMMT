@@ -130,7 +130,7 @@ class BitStreamTest {
         val actualOrder = mutableListOf<Int>()
 
         while (resultQueue.isNotEmpty()) {
-            actualOrder.add(resultQueue.poll().value.symbol)
+            actualOrder.add(resultQueue.poll().symbol)
         }
 
         assertEquals(expectedOrder, actualOrder)

@@ -88,7 +88,7 @@ data class Huffman (val symbols: IntArray) {
         }
     }
 
-    private fun getOccurences(toEncode: IntArray): PriorityQueue<TreeNode> {
+    fun getOccurences(toEncode: IntArray): PriorityQueue<TreeNode> {
         val occurences = PriorityQueue(Comparator.comparing (TreeNode::largestAmountOfStepsToLeaf).thenComparing(TreeNode::frequency))
         for (symbol in symbols) {
             val numOccurences = toEncode.filter { it == symbol }.size
