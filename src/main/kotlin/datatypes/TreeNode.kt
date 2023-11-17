@@ -1,6 +1,6 @@
 package datatypes
 
-data class TreeNode(val symbol: Int, val frequency: Int, var depth: Int){
+data class TreeNode(val symbol: Int, val frequency: Int, var largestAmountOfStepsToLeaf: Int){
     var parent: TreeNode? = null
 
     var children:MutableList<TreeNode> = mutableListOf()
@@ -11,7 +11,7 @@ data class TreeNode(val symbol: Int, val frequency: Int, var depth: Int){
     }
 
     override fun toString(): String {
-        return "TreeNode(symbol=$symbol, frequency=$frequency, depth=$depth)"
+        return "TreeNode(symbol=$symbol, frequency=$frequency, depth=$largestAmountOfStepsToLeaf)"
     }
     companion object {
         fun empty(): TreeNode{

@@ -63,9 +63,7 @@ data class Huffman (val symbols: IntArray) {
         while (sortedOccurences.size != 1){
             val one = sortedOccurences.poll();
             val two = sortedOccurences.poll();
-
-            //TODO: depth?
-            var currentNode: TreeNode = TreeNode(Int.MIN_VALUE, one.frequency + two.frequency, Math.max(one.depth, two.depth)+1);
+            val currentNode: TreeNode = TreeNode(Int.MIN_VALUE, one.frequency + two.frequency, Math.max(one.largestAmountOfStepsToLeaf, two.largestAmountOfStepsToLeaf)+1);
             currentNode.addChild(one)
             currentNode.addChild(two)
             sortedOccurences.add(currentNode)
@@ -77,13 +75,13 @@ data class Huffman (val symbols: IntArray) {
     }
 
     private fun setupNewRoot(oldRoot: TreeNode, newRoot: TreeNode) {
-//        updateRootDepths(oldRoot)
         newRoot.addChild(TreeNode.empty())
         newRoot.addChild(oldRoot)
+        newRoot.largestAmountOfStepsToLeaf = oldRoot.largestAmountOfStepsToLeaf + 1
     }
 
     private fun updateRootDepths(treeNode: TreeNode) {
-        treeNode.depth+=1
+        treeNode.largestAmountOfStepsToLeaf+=1
         if(treeNode.children.size != 0){
             updateRootDepths(treeNode.children[0])
             updateRootDepths(treeNode.children[1])
@@ -91,10 +89,7 @@ data class Huffman (val symbols: IntArray) {
     }
 
     private fun getOccurences(toEncode: IntArray): PriorityQueue<TreeNode> {
-//        val occurences = PriorityQueue<TreeNode>(Comparator.comparing (TreeNode::depth).thenComparing(TreeNode::frequency))
-        val occurences = PriorityQueue<TreeNode> { node1, node2 ->
-            node1.frequency - node2.frequency
-        }
+        val occurences = PriorityQueue(Comparator.comparing (TreeNode::largestAmountOfStepsToLeaf).thenComparing(TreeNode::frequency))
         for (symbol in symbols) {
             val numOccurences = toEncode.filter { it == symbol }.size
             occurences.add(TreeNode(symbol, numOccurences, 0))
