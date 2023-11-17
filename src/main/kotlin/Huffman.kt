@@ -30,7 +30,7 @@ data class Huffman (val symbols: IntArray) {
         if (tree.children.isEmpty()) {
             if (currentSymbol == tree.symbol) {
                 // Found the symbol, so trim the bitstream and set the insert index
-                bitstreamForSymbol.removeBytesNotNeededAfterIndex(curBit)
+                bitstreamForSymbol.removeBitsNotNeededStartFromIndex(curBit)
                 bitstreamForSymbol.byteInsertIndex = curBit
                 return bitstreamForSymbol
             } else {
@@ -38,14 +38,6 @@ data class Huffman (val symbols: IntArray) {
                 return BitStream() // Or some indication that the symbol was not found in this path
             }
         } else {
-            // Traverse the left subtree with '0' added to the bitstream
-            bitstreamForSymbol.addToList(0)
-            val leftSearch = getBitstreamFromTree(currentSymbol, tree.children[0], bitstreamForSymbol, curBit + 1)
-            if (leftSearch != BitStream()) {
-                return leftSearch // Found the symbol in the left subtree
-            }
-            bitstreamForSymbol.revert() // Backtrack the bit added for the left subtree
-
             // Traverse the right subtree with '1' added to the bitstream
             bitstreamForSymbol.addToList(1)
             val rightSearch = getBitstreamFromTree(currentSymbol, tree.children[1], bitstreamForSymbol, curBit + 1)
@@ -53,6 +45,14 @@ data class Huffman (val symbols: IntArray) {
                 return rightSearch // Found the symbol in the right subtree
             }
             bitstreamForSymbol.revert() // Backtrack the bit added for the right subtree
+
+            // Traverse the left subtree with '0' added to the bitstream
+            bitstreamForSymbol.addToList(0)
+            val leftSearch = getBitstreamFromTree(currentSymbol, tree.children[0], bitstreamForSymbol, curBit + 1)
+            if (leftSearch != BitStream()) {
+                return leftSearch // Found the symbol in the left subtree
+            }
+            bitstreamForSymbol.revert() // Backtrack the bit added for the left subtree
         }
 
         return BitStream() // Or some indication that the symbol was not found in this path
@@ -91,7 +91,7 @@ data class Huffman (val symbols: IntArray) {
     }
 
     private fun getOccurences(toEncode: IntArray): PriorityQueue<TreeNode> {
-        //TODO: sort by depth too
+//        val occurences = PriorityQueue<TreeNode>(Comparator.comparing (TreeNode::depth).thenComparing(TreeNode::frequency))
         val occurences = PriorityQueue<TreeNode> { node1, node2 ->
             node1.frequency - node2.frequency
         }
@@ -124,4 +124,5 @@ data class Huffman (val symbols: IntArray) {
         return  returnMessage.toIntArray()
     }
 }
+
 data class HufEncode(val encodedMessage: BitStream, val symbolToCodeMap: HashMap<Int, BitStream>)

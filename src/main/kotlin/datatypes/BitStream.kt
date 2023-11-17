@@ -96,7 +96,7 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
         return bit
     }
 
-    //COMMENT: FUCKS WITH TIME CONTINOUM (ByteInsertIndex)
+    //COMMENT: MESSES WITH TIME CONTINUUM (ByteInsertIndex)
     fun setBit(index: Int, bitToAdd: Int) {
         if(values.size == 0){
             values.add(0u)
@@ -111,14 +111,10 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
         values[byteIndex] = calculateModifiedByte(values[byteIndex].toInt(), bitIndex, bitToAdd).toUByte()
 
     }
-
-    //TODO: WRITE TEST
     fun revert(){
-
         if (byteInsertIndex == 0){
             return
         }
-
         if (byteInsertIndex % 7 == 1 && byteInsertIndex>7){
             values.removeLast()
             byteInsertIndex = 7
@@ -202,8 +198,11 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
         return result
     }
 
-    //TODO: WRITE TEST
-    fun removeBytesNotNeededAfterIndex(index: Int) {
+    /**
+     * This method sets first removes all bytes that occur after the byte containing the index and then
+     * sets bits to zero starting from bit at index-position
+     */
+    fun removeBitsNotNeededStartFromIndex(index: Int) {
         val byteIndex = index / 8
         val bitIndex = index % 8
 
@@ -211,12 +210,10 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
             values.removeLast()
         }
 
-        byteInsertIndex = bitIndex+1
-
         for(i in (index..<values.size * 8)){
             setBit(i, 0)
-            byteInsertIndex = bitIndex+1
         }
+        byteInsertIndex = bitIndex
     }
 }
 

@@ -1,6 +1,5 @@
 package datatypes
 
-
 data class TreeNode(val symbol: Int, val frequency: Int, var depth: Int){
     var parent: TreeNode? = null
 
@@ -11,9 +10,14 @@ data class TreeNode(val symbol: Int, val frequency: Int, var depth: Int){
         node.parent = this
     }
 
+    override fun toString(): String {
+        return "TreeNode(symbol=$symbol, frequency=$frequency, depth=$depth)"
+    }
     companion object {
         fun empty(): TreeNode{
             return TreeNode(Int.MIN_VALUE, Int.MAX_VALUE, 0)
         }
     }
+
+
 }
