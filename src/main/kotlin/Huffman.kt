@@ -61,14 +61,38 @@ data class Huffman (val symbols: IntArray) {
 
     private fun createTree(sortedOccurences: PriorityQueue<TreeNode<NodeData>>): TreeNode<NodeData> {
         while (sortedOccurences.size != 1){
+<<<<<<< Updated upstream
             val one = sortedOccurences.poll();
             val two = sortedOccurences.poll();
             var currentNode: TreeNode<NodeData> = TreeNode(NodeData(Integer.MIN_VALUE, one.value.frequency + two.value.frequency));
+=======
+            val one = sortedOccurences.poll()
+            val two = sortedOccurences.poll()
+            //TODO: depth?
+            var currentNode: TreeNode = TreeNode(Int.MIN_VALUE, one.frequency + two.frequency, Math.max(one.depth, two.depth)+1);
+>>>>>>> Stashed changes
             currentNode.addChild(one)
             currentNode.addChild(two)
             sortedOccurences.add(currentNode)
         }
-        return sortedOccurences.poll();
+        val oldRoot = sortedOccurences.poll()
+        val newRoot = TreeNode.empty()
+        setupNewRoot(oldRoot, newRoot)
+        return newRoot
+    }
+
+    private fun setupNewRoot(oldRoot: TreeNode, newRoot: TreeNode) {
+//        updateRootDepths(oldRoot)
+        newRoot.addChild(TreeNode.empty())
+        newRoot.addChild(oldRoot)
+    }
+
+    private fun updateRootDepths(treeNode: TreeNode) {
+        treeNode.depth+=1
+        if(treeNode.children.size != 0){
+            updateRootDepths(treeNode.children[0])
+            updateRootDepths(treeNode.children[1])
+        }
     }
 
     private fun getOccurences(toEncode: IntArray): PriorityQueue<TreeNode<NodeData>> {
@@ -77,9 +101,13 @@ data class Huffman (val symbols: IntArray) {
         }
         for (symbol in symbols) {
             val numOccurences = toEncode.filter { it == symbol }.size
+<<<<<<< Updated upstream
 
             //save to Map
             occurences.add(TreeNode(NodeData(symbol, numOccurences)))
+=======
+            occurences.add(TreeNode(symbol, numOccurences, 0))
+>>>>>>> Stashed changes
         }
         return occurences
     }
