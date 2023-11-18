@@ -4,16 +4,15 @@ import java.util.*
 
 data class Huffman (val symbols: IntArray) {
 
-    val maxDepth = 2 //L
+    val maxDepth = 4 //L
     fun encode(toEncode: IntArray): HufEncode{
         val sortedOccurences = getOccurences(toEncode)
         val tree = createTree(PriorityQueue(sortedOccurences), true)
         var cutTree = cutTreeForDepth(tree)
-        print(tree.toString())
         while(cutTree.largestAmountOfStepsToLeaf>maxDepth){ //repeat if to deep
             cutTree = cutTreeForDepth(cutTree)
         }
-        print(cutTree.toString())
+        //TODO: geht entweder ab hier oder im decode kaputt
         val symbolToBitstreamMap = getSymbolToBitstreamMap(cutTree, sortedOccurences)
         val encoded = BitStream()
         for (symbol in toEncode) {
@@ -23,7 +22,7 @@ data class Huffman (val symbols: IntArray) {
     }
     private fun cutTreeForDepth(originalTree:TreeNode): TreeNode{
         val currentDepth = 0
-        val cutNodes = PriorityQueue(Comparator.comparing(TreeNode::largestAmountOfStepsToLeaf).thenComparing(TreeNode::frequency))
+        var cutNodes = PriorityQueue(Comparator.comparing(TreeNode::largestAmountOfStepsToLeaf).thenComparing(TreeNode::frequency))
         //cut and collect nodes > then this.depth
         findNodesInMaxDepth(originalTree, currentDepth, cutNodes)
         if(cutNodes.isEmpty()){
