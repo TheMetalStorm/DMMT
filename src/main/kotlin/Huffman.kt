@@ -4,15 +4,61 @@ import java.util.*
 
 data class Huffman (val symbols: IntArray) {
 
+    val maxDepth = 16 //L
     fun encode(toEncode: IntArray): HufEncode{
         val sortedOccurences = getOccurences(toEncode)
         val tree = createTree(PriorityQueue(sortedOccurences))
-        val symbolToBitstreamMap = getSymbolToBitstreamMap(tree, sortedOccurences)
+        val cutTree = cutTreeForDepth(tree)
+        val symbolToBitstreamMap = getSymbolToBitstreamMap(cutTree, sortedOccurences)
         val encoded = BitStream()
         for (symbol in toEncode) {
             encoded.addBitStreamUntilByteInsertIndex(symbolToBitstreamMap.getValue(symbol))
         }
         return HufEncode(encoded, symbolToBitstreamMap)
+    }
+    private fun cutTreeForDepth(originalTree:TreeNode): TreeNode{
+        val currentDepth = 0
+        val cutNodes = PriorityQueue(Comparator.comparing(TreeNode::largestAmountOfStepsToLeaf).thenComparing(TreeNode::frequency))
+        //cut and collect nodes > then this.depth
+        findNodesInMaxDepth(originalTree, currentDepth, cutNodes)
+        //build new tree with cut nodes
+        val treeOfCutNodes = createTree(PriorityQueue(cutNodes))
+        //add new node to tree at depthToAddNewTree with minimum weight
+        var depthToAddNewTree:Int =  maxDepth - treeOfCutNodes.largestAmountOfStepsToLeaf - 1 //test
+        val newRoot = TreeNode.empty()
+        if(depthToAddNewTree == 0){ //root for treeOfCutNodes == root of originalTree
+            //set new node as parent -> set cutTree left and originalTree right
+            newRoot.addChild(treeOfCutNodes)
+            newRoot.addChild(originalTree)
+            newRoot.largestAmountOfStepsToLeaf = Math.max(treeOfCutNodes.largestAmountOfStepsToLeaf, originalTree.largestAmountOfStepsToLeaf)+1
+        }
+        else {
+            var iterateChild:TreeNode = TreeNode.empty()
+            while (depthToAddNewTree > 0) { //root for treeOfCutNodes != root of originalTree
+                iterateChild = treeOfCutNodes.children[0] // always move to the smaller one
+                depthToAddNewTree--
+            }
+            newRoot.parent = iterateChild.parent
+            newRoot.addChild(treeOfCutNodes)
+            newRoot.addChild(iterateChild)
+        }
+
+        return newRoot
+    }
+
+    private fun findNodesInMaxDepth(tree: TreeNode, currentDepth: Int, newTree: PriorityQueue<TreeNode>) {
+        if(currentDepth == maxDepth-1){
+            for(child in tree.children) {
+                newTree.add(child)
+            }
+            tree.children.clear();
+        }
+        else{
+            val oldDepth = currentDepth
+            for(child in tree.children) {
+                findNodesInMaxDepth(child, oldDepth+1, newTree)
+            }
+        }
     }
 
     private fun getSymbolToBitstreamMap(tree: TreeNode, sortedOccurences: PriorityQueue<TreeNode>): HashMap<Int, BitStream> {

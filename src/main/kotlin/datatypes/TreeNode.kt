@@ -9,7 +9,6 @@ data class TreeNode(val symbol: Int, val frequency: Int, var largestAmountOfStep
         children.add(node)
         node.parent = this
     }
-
     override fun toString(): String {
         return "TreeNode(symbol=$symbol, frequency=$frequency, depth=$largestAmountOfStepsToLeaf)"
     }
