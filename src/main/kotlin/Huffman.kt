@@ -39,10 +39,15 @@ data class Huffman (val symbols: IntArray) {
                 depthToAddNewTree--
             }
             newRoot.parent = iterateChild.parent
-            newRoot.addChild(treeOfCutNodes)
-            newRoot.addChild(iterateChild)
+            if(treeOfCutNodes.frequency<=iterateChild.frequency){
+                newRoot.addChild(treeOfCutNodes)
+                newRoot.addChild(iterateChild)
+            }
+            else{
+                newRoot.addChild(iterateChild)
+                newRoot.addChild(treeOfCutNodes)
+            }
         }
-
         return newRoot
     }
 
