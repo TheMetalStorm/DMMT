@@ -4,10 +4,10 @@ import java.util.*
 
 data class Huffman (val symbols: IntArray) {
 
-    val maxDepth = 16 //L
+    val maxDepth = 2 //L
     fun encode(toEncode: IntArray): HufEncode{
         val sortedOccurences = getOccurences(toEncode)
-        val tree = createTree(PriorityQueue(sortedOccurences))
+        val tree = createTree(PriorityQueue(sortedOccurences), true)
         val cutTree = cutTreeForDepth(tree)
         val symbolToBitstreamMap = getSymbolToBitstreamMap(cutTree, sortedOccurences)
         val encoded = BitStream()
@@ -22,7 +22,8 @@ data class Huffman (val symbols: IntArray) {
         //cut and collect nodes > then this.depth
         findNodesInMaxDepth(originalTree, currentDepth, cutNodes)
         //build new tree with cut nodes
-        val treeOfCutNodes = createTree(PriorityQueue(cutNodes))
+        val treeOfCutNodes = createTree(PriorityQueue(cutNodes), false)
+        print(treeOfCutNodes.toString())
         //add new node to tree at depthToAddNewTree with minimum weight
         var depthToAddNewTree:Int =  maxDepth - treeOfCutNodes.largestAmountOfStepsToLeaf - 1 //test
         val newRoot = TreeNode.empty()
@@ -110,7 +111,7 @@ data class Huffman (val symbols: IntArray) {
     }
 
 
-    private fun createTree(sortedOccurences: PriorityQueue<TreeNode>): TreeNode {
+    private fun createTree(sortedOccurences: PriorityQueue<TreeNode>, addNewRoot: Boolean): TreeNode {
         while (sortedOccurences.size != 1){
             val one = sortedOccurences.poll();
             val two = sortedOccurences.poll();
@@ -119,9 +120,16 @@ data class Huffman (val symbols: IntArray) {
             currentNode.addChild(two)
             sortedOccurences.add(currentNode)
         }
+        val newRoot: TreeNode
         val oldRoot = sortedOccurences.poll()
-        val newRoot = TreeNode.empty()
-        setupNewRoot(oldRoot, newRoot)
+        if(addNewRoot){
+            newRoot = TreeNode.empty()
+            setupNewRoot(oldRoot, newRoot)
+        }
+        else
+        {
+            newRoot = oldRoot
+        }
         return newRoot
     }
 
