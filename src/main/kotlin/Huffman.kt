@@ -1,15 +1,16 @@
 import datatypes.BitStream
 import datatypes.TreeNode
 import java.util.*
+import kotlin.collections.ArrayList
 
 data class Huffman (val symbols: IntArray) {
 
-    val maxDepth = 2 //L
+    val maxDepth = 3 //L
     fun encode(toEncode: IntArray): HufEncode{
         val sortedOccurences = getOccurences(toEncode)
         val tree = createTree(PriorityQueue(sortedOccurences), true)
-        var cutTree = cutTreeForDepth(tree)
         print(tree.toString())
+        var cutTree = cutTreeForDepth(tree)
         while(cutTree.largestAmountOfStepsToLeaf>maxDepth){ //repeat if to deep
             cutTree = cutTreeForDepth(cutTree)
         }
@@ -23,14 +24,21 @@ data class Huffman (val symbols: IntArray) {
     }
     private fun cutTreeForDepth(originalTree:TreeNode): TreeNode{
         val currentDepth = 0
-        val cutNodes = PriorityQueue(Comparator.comparing(TreeNode::largestAmountOfStepsToLeaf).thenComparing(TreeNode::frequency))
+        val cutNodes = arrayListOf<TreeNode>()
         //cut and collect nodes > then this.depth
         findNodesInMaxDepth(originalTree, currentDepth, cutNodes)
         if(cutNodes.isEmpty()){
             return originalTree
         }
         //build new tree with cut nodes
-        val treeOfCutNodes = createTree(PriorityQueue(cutNodes), false)
+        val cutLeafs:PriorityQueue<TreeNode> = PriorityQueue(Comparator.comparing(TreeNode::largestAmountOfStepsToLeaf).thenComparing(TreeNode::frequency))
+        for(node:TreeNode in cutNodes){
+            if(node.largestAmountOfStepsToLeaf==0) {
+                cutLeafs.add(node)
+            }
+        }
+
+        val treeOfCutNodes = createTree(PriorityQueue(cutLeafs), false)
         //add new node to tree at depthToAddNewTree with minimum weight
         var depthToAddNewTree:Int =  maxDepth - treeOfCutNodes.largestAmountOfStepsToLeaf - 1 //test
         val newRoot = TreeNode.empty()
@@ -59,7 +67,7 @@ data class Huffman (val symbols: IntArray) {
         return newRoot
     }
 
-    private fun findNodesInMaxDepth(tree: TreeNode, currentDepth: Int, newTree: PriorityQueue<TreeNode>) {
+    private fun findNodesInMaxDepth(tree: TreeNode, currentDepth: Int, newTree: ArrayList<TreeNode>) {
         if(currentDepth == maxDepth-1){
             for(child in tree.children) {
                 newTree.add(child)
