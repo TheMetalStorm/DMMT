@@ -44,12 +44,12 @@ data class Huffman (val symbols: IntArray) {
         else {
             var iterateChild:TreeNode = TreeNode.empty()
             while (depthToAddNewTree > 0) { //root for treeOfCutNodes != root of originalTree
-                iterateChild = treeOfCutNodes.children[0] // always move to the smaller one
+                iterateChild = originalTree.children[0] // always move to the smaller one
                 depthToAddNewTree--
             }
             newRoot.parent = iterateChild.parent
             if(treeOfCutNodes.frequency<=iterateChild.frequency){
-                newRoot.addChild(treeOfCutNodes)
+                newRoot.addChild(treeOfCutNodes)//TODO: FIX logic
                 newRoot.addChild(iterateChild)
             }
             else{
