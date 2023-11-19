@@ -9,11 +9,11 @@ data class Huffman (val symbols: IntArray) {
     fun encode(toEncode: IntArray): HufEncode{
         val sortedOccurences = getOccurences(toEncode)
         val tree = createTree(PriorityQueue(sortedOccurences), true)
+        //TODO (simon): geht in cutTreeForDepth kaputt
         var cutTree = cutTreeForDepth(tree)
         while(cutTree.largestAmountOfStepsToLeaf>maxDepth){ //repeat if to deep
             cutTree = cutTreeForDepth(cutTree)
         }
-        //TODO: geht entweder ab hier oder im decode kaputt
         val symbolToBitstreamMap = getSymbolToBitstreamMap(cutTree, sortedOccurences)
         val encoded = BitStream()
         for (symbol in toEncode) {
@@ -30,13 +30,7 @@ data class Huffman (val symbols: IntArray) {
             return originalTree
         }
         //build new tree with cut nodes
-        val cutLeafs:PriorityQueue<TreeNode> = PriorityQueue(Comparator.comparing(TreeNode::largestAmountOfStepsToLeaf).thenComparing(TreeNode::frequency))
-        for(node:TreeNode in cutNodes){
-            if(node.largestAmountOfStepsToLeaf==0) {
-                cutLeafs.add(node)
-            }
-        }
-
+        val cutLeafs:PriorityQueue<TreeNode> = getLeaves(cutNodes)
         val treeOfCutNodes = createTree(PriorityQueue(cutLeafs), false)
         //add new node to tree at depthToAddNewTree with minimum weight
         var depthToAddNewTree:Int =  maxDepth - treeOfCutNodes.largestAmountOfStepsToLeaf - 1 //test
@@ -64,6 +58,27 @@ data class Huffman (val symbols: IntArray) {
             }
         }
         return newRoot
+    }
+
+    private fun getLeaves(cutNodes: java.util.ArrayList<TreeNode>): PriorityQueue<TreeNode> {
+        val result = PriorityQueue(Comparator.comparing(TreeNode::largestAmountOfStepsToLeaf).thenComparing(TreeNode::frequency))
+        for (cutNode in cutNodes) {
+            getLeavesRec(cutNode, result)
+        }
+        return result;
+    }
+
+    private fun getLeavesRec(node: TreeNode, result: PriorityQueue<TreeNode>) {
+
+        if(node.largestAmountOfStepsToLeaf == 0){
+            result.add(node)
+        }
+        else{
+            for (child in node.children) {
+                getLeavesRec(child, result)
+            }
+        }
+
     }
 
     private fun findNodesInMaxDepth(tree: TreeNode, currentDepth: Int, newTree: ArrayList<TreeNode>) {
