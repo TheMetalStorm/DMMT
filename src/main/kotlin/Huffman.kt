@@ -8,12 +8,17 @@ data class Huffman (val symbols: IntArray) {
     val maxDepth = 4 //L
     fun encode(toEncode: IntArray): HufEncode{
         val sortedOccurences = getOccurences(toEncode)
-        val tree = createTree(PriorityQueue(sortedOccurences), true)
+        val tree = createTree(PriorityQueue(sortedOccurences), false)
+        print(tree.toString())
+
         //TODO (simon): geht in cutTreeForDepth kaputt
         var cutTree = cutTreeForDepth(tree)
-        while(cutTree.largestAmountOfStepsToLeaf>maxDepth){ //repeat if to deep
-            cutTree = cutTreeForDepth(cutTree)
-        }
+
+//        while(cutTree.largestAmountOfStepsToLeaf>maxDepth){ //repeat if to deep
+//            cutTree = cutTreeForDepth(cutTree)
+//        }
+        print(cutTree.toString())
+
         val symbolToBitstreamMap = getSymbolToBitstreamMap(cutTree, sortedOccurences)
         val encoded = BitStream()
         for (symbol in toEncode) {
@@ -40,24 +45,27 @@ data class Huffman (val symbols: IntArray) {
             newRoot.addChild(treeOfCutNodes)
             newRoot.addChild(originalTree)
             newRoot.largestAmountOfStepsToLeaf = Math.max(treeOfCutNodes.largestAmountOfStepsToLeaf, originalTree.largestAmountOfStepsToLeaf)+1
+            return newRoot
         }
         else {
-            var iterateChild:TreeNode = TreeNode.empty()
+            var iterateChild:TreeNode = originalTree
             while (depthToAddNewTree > 0) { //root for treeOfCutNodes != root of originalTree
-                iterateChild = originalTree.children[0] // always move to the smaller one
+                iterateChild = iterateChild.children[0] // always move to the smaller one ATTENTION: small child could not have other needed children
                 depthToAddNewTree--
             }
-            newRoot.parent = iterateChild.parent
+//            newRoot.parent = iterateChild.parent
+            iterateChild.parent?.children?.set(0, newRoot)
             if(treeOfCutNodes.frequency<=iterateChild.frequency){
-                newRoot.addChild(treeOfCutNodes)//TODO: FIX logic
+                newRoot.addChild(treeOfCutNodes)
                 newRoot.addChild(iterateChild)
             }
             else{
                 newRoot.addChild(iterateChild)
                 newRoot.addChild(treeOfCutNodes)
             }
+            return originalTree
+
         }
-        return newRoot
     }
 
     private fun getLeaves(cutNodes: java.util.ArrayList<TreeNode>): PriorityQueue<TreeNode> {
