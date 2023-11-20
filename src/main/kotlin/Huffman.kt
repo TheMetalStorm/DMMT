@@ -5,10 +5,11 @@ import kotlin.collections.ArrayList
 
 data class Huffman (val symbols: IntArray) {
 
-    val maxDepth = 4 //L
+    val maxDepth = 5 //L
     fun encode(toEncode: IntArray): HufEncode{
         val sortedOccurences = getOccurences(toEncode)
-        val tree = createTree(PriorityQueue(sortedOccurences), false)
+        val tree = createTree(PriorityQueue(sortedOccurences), true)
+        println("original Tree")
         print(tree.toString())
 
         //TODO (simon): geht in cutTreeForDepth kaputt
@@ -17,6 +18,7 @@ data class Huffman (val symbols: IntArray) {
 //        while(cutTree.largestAmountOfStepsToLeaf>maxDepth){ //repeat if to deep
 //            cutTree = cutTreeForDepth(cutTree)
 //        }
+        println("resulting Tree")
         print(cutTree.toString())
 
         val symbolToBitstreamMap = getSymbolToBitstreamMap(cutTree, sortedOccurences)
@@ -30,13 +32,17 @@ data class Huffman (val symbols: IntArray) {
         val currentDepth = 0
         val cutNodes = arrayListOf<TreeNode>()
         //cut and collect nodes > then this.depth
-        findNodesInMaxDepth(originalTree, currentDepth, cutNodes)
+        findNodesInDepth(maxDepth, originalTree, currentDepth, cutNodes, true)
         if(cutNodes.isEmpty()){
             return originalTree
         }
         //build new tree with cut nodes
         val cutLeafs:PriorityQueue<TreeNode> = getLeaves(cutNodes)
         val treeOfCutNodes = createTree(PriorityQueue(cutLeafs), false)
+        println("Tree of Cut Leaves")
+        print(treeOfCutNodes.toString())
+        println("Original Tree after cut")
+        print(originalTree.toString())
         //add new node to tree at depthToAddNewTree with minimum weight
         var depthToAddNewTree:Int =  maxDepth - treeOfCutNodes.largestAmountOfStepsToLeaf - 1 //test
         val newRoot = TreeNode.empty()
@@ -53,8 +59,13 @@ data class Huffman (val symbols: IntArray) {
                 iterateChild = iterateChild.children[0] // always move to the smaller one ATTENTION: small child could not have other needed children
                 depthToAddNewTree--
             }
-//            newRoot.parent = iterateChild.parent
             iterateChild.parent?.children?.set(0, newRoot)
+
+//            val nodesOnLevelToAdd = arrayListOf<TreeNode>()
+//            findNodesInDepth(depthToAddNewTree, originalTree, currentDepth, nodesOnLevelToAdd, false)
+//            val iterateChild = nodesOnLevelToAdd.minBy { it.frequency }
+//            iterateChild.parent?.children?.set(0, newRoot)
+
             if(treeOfCutNodes.frequency<=iterateChild.frequency){
                 newRoot.addChild(treeOfCutNodes)
                 newRoot.addChild(iterateChild)
@@ -89,17 +100,18 @@ data class Huffman (val symbols: IntArray) {
 
     }
 
-    private fun findNodesInMaxDepth(tree: TreeNode, currentDepth: Int, newTree: ArrayList<TreeNode>) {
-        if(currentDepth == maxDepth-1){
+    private fun findNodesInDepth(depthToCheck:Int, tree: TreeNode, currentDepth: Int, newTree: ArrayList<TreeNode>, cut: Boolean) {
+        if(currentDepth == depthToCheck-1){
             for(child in tree.children) {
                 newTree.add(child)
             }
-            tree.children.clear();
+            if(cut)
+                tree.children.clear();
         }
         else{
             val oldDepth = currentDepth
             for(child in tree.children) {
-                findNodesInMaxDepth(child, oldDepth+1, newTree)
+                findNodesInDepth(depthToCheck, child,oldDepth+1, newTree, cut)
             }
         }
     }
