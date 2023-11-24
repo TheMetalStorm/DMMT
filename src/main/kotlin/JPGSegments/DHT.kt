@@ -12,7 +12,7 @@ data class DHT(val symbolToCodeMap: HashMap<Int, BitStream>, val huffmanTableNum
 
         val numSymbols = symbolToCodeMap.size
         //length including marker
-        //marker + tableInfo + symbolCountPerDepthLevel + numSymbols
+        //marker + tableInfo + symbol count for each symbol length + numSymbols
         var length = 2 + 1 + 16 + numSymbols
         val lengthLow =  length.toUByte()
         val lengthHigh = (length shr 8).toUByte()
