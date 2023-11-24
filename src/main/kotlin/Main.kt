@@ -1,4 +1,5 @@
 import JPGSegments.APP0
+import JPGSegments.DHT
 import JPGSegments.SOF0
 import datatypes.BitStream
 
@@ -58,14 +59,14 @@ fun main() {
     val originalMessage = "AAAABBBBCCCCCCDDDDDDEEEEEEEFFFFFFFFGGGHHHHIIIIIIIJJJJKKKKKKKKLL"
     val (encodedMessage, symbolToCodeMap) = huffman.encode(originalMessage.toCharArray().map { it.code }.toIntArray())
 
-    for (symbol in symbolToCodeMap) {
-        val c = symbol.key
-        val bs = symbol.value
-        println("Symbol: $c")
-        bs.printBits()
-        println(bs)
-        println()
-    }
+//    for (symbol in symbolToCodeMap) {
+//        val c = symbol.key
+//        val bs = symbol.value
+//        println("Symbol: $c")
+//        bs.printBits()
+//        println(bs)
+//        println()
+//    }
 
     encodedMessage.printBits()
     println()
@@ -76,5 +77,7 @@ fun main() {
     for (i in array) {
         print(Char(i))
     }
+
+    val dht = DHT(symbolToCodeMap, 3, 1)
 
 }

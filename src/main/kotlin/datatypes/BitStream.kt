@@ -161,6 +161,10 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
         writer.close()
     }
 
+    fun getBitstreamLength(): Int {
+        return (values.size-1)*8 + (byteInsertIndex+1)
+    }
+
     fun saveToFileAsBytes(fileName: String){
         val file = File(fileName)
         file.writeBytes(values.toUByteArray().toByteArray())
