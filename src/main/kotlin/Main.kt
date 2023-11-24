@@ -39,22 +39,6 @@ fun main() {
     val sof0 = SOF0(8u, 0u, 16u, 0u, 16u, 1u,
         arrayListOf(0x01u, 0x22u, 0u))
 
-//    //SOI
-//    bitstream.addByteToStream(arrayListOf(0xffu, 0xd8u))
-//
-//    //APP0
-//    bitstream.addBitStream(app0.getBitStream());
-//
-//    //SOF0
-//    bitstream.addBitStream(sof0.getBitStream())
-//
-//    //EOI
-//    bitstream.addByteToStream(arrayListOf(0xffu, 0xd9u))
-//
-//    bitstream.printBits()
-//
-//    bitstream.saveToFileAsBytes("test.jpeg")
-
     val huffman = Huffman(intArrayOf('A'.code, 'B'.code, 'C'.code, 'D'.code, 'E'.code, 'F'.code,'G'.code, 'H'.code,'I'.code,'J'.code,'K'.code,'L'.code))
     val originalMessage = "AAAABBBBCCCCCCDDDDDDEEEEEEEFFFFFFFFGGGHHHHIIIIIIIJJJJKKKKKKKKLL"
     val (encodedMessage, symbolToCodeMap) = huffman.encode(originalMessage.toCharArray().map { it.code }.toIntArray())
@@ -78,6 +62,27 @@ fun main() {
         print(Char(i))
     }
 
-    val dht = DHT(symbolToCodeMap, 3, 1)
+    val dht = DHT(symbolToCodeMap, 0, 0)
+    val dht2 = DHT(symbolToCodeMap, 1, 1)
 
+//    //SOI
+    bitstream.addByteToStream(arrayListOf(0xffu, 0xd8u))
+//
+//    //APP0
+    bitstream.addBitStream(app0.getBitStream());
+//
+//    //SOF0
+    bitstream.addBitStream(sof0.getBitStream())
+//
+    //DHT
+    bitstream.addBitStream(dht.getBitStream())
+    bitstream.addBitStream(dht2.getBitStream())
+
+
+//    //EOI
+    bitstream.addByteToStream(arrayListOf(0xffu, 0xd9u))
+//
+//    bitstream.printBits()
+//
+    bitstream.saveToFileAsBytes("test.jpeg")
 }

@@ -162,7 +162,7 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
     }
 
     fun getBitstreamLength(): Int {
-        return (values.size-1)*8 + (byteInsertIndex+1)
+        return (values.size-1)*8 + (byteInsertIndex-1)
     }
 
     fun saveToFileAsBytes(fileName: String){
