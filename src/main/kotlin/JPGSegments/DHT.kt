@@ -27,8 +27,8 @@ data class DHT(val symbolToCodeMap: HashMap<Int, BitStream>, val huffmanTableNum
         //Tabelle mit den Symbolen in aufsteigender Folge der Kodelängen
         val sortedSymbols = symbolToCodeMap.toList().sortedBy { (_, value) -> value.getBitstreamLength() }.toMap()
         for (symbol in sortedSymbols) {
-            val bs = symbol.value
-            bitStream.addByteToStream(bs.getByte(0))
+            val sym = symbol.key
+            bitStream.addByteToStream(sym.toUByte())
         }
 
 
@@ -42,6 +42,7 @@ data class DHT(val symbolToCodeMap: HashMap<Int, BitStream>, val huffmanTableNum
         if(!listOf(0,1).contains(huffmanTableType)){
             throw Exception("Huffman Table Type should be 0 or 1")
         }
+
 
     }
 
