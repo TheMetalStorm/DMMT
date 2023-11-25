@@ -86,7 +86,13 @@ class Huffman {
             val nodesOnLevelToAdd = arrayListOf<TreeNode>()
             findNodesInDepth(depthToAddNewTree, originalTree, currentDepth, nodesOnLevelToAdd, false)
             val iterateChild = nodesOnLevelToAdd.minBy { it.frequency }
-            iterateChild.parent?.addLeft(newRoot)
+            //TODO: add left or right?
+            if(iterateChild.parent?.rightChild == iterateChild){
+                iterateChild.parent?.addRight(newRoot)
+            }
+            if(iterateChild.parent?.leftChild == iterateChild){
+                iterateChild.parent?.addLeft(newRoot)
+            }
 
             if(treeOfCutNodes.frequency<=iterateChild.frequency){
                 newRoot.addLeft(treeOfCutNodes)
