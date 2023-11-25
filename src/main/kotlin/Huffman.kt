@@ -4,14 +4,16 @@ import datatypes.TreeNode
 import java.util.*
 import kotlin.collections.ArrayList
 
-data class Huffman (val symbols: IntArray) {
+class Huffman {
 
     //limit to 15 so that we can later add a new node at the 1* Bitstream to prevent it, ends with depth = 16
+    var symbols: IntArray = intArrayOf()
     val maxDepth = 15
     fun encode(toEncode: IntArray): HufEncode{
+
+        getSymbols(toEncode)
         val sortedOccurences = getOccurences(toEncode)
         val tree = createTree(PriorityQueue(sortedOccurences))
-
 
         //TODO (simon): geht in cutTreeForDepth kaputt
 //        var cutTree = cutTreeForDepth(tree)
@@ -32,6 +34,7 @@ data class Huffman (val symbols: IntArray) {
         newBottomRight.children.add(child)
         newBottomRight.addChild(TreeNode.empty())
 
+        print(tree.toString())
 
         val symbolToBitstreamMap = getSymbolToBitstreamMap(tree, sortedOccurences)
         val encoded = BitStream()
@@ -40,6 +43,11 @@ data class Huffman (val symbols: IntArray) {
         }
         return HufEncode(encoded, symbolToBitstreamMap)
     }
+
+    private fun getSymbols(toEncode: IntArray) {
+        symbols = toEncode.distinct().toIntArray()
+    }
+
     private fun cutTreeForDepth(originalTree:TreeNode): TreeNode{
         val currentDepth = 0
         val cutNodes = arrayListOf<TreeNode>()
@@ -51,10 +59,6 @@ data class Huffman (val symbols: IntArray) {
         //build new tree with cut nodes
         val cutLeafs:PriorityQueue<TreeNode> = getLeaves(cutNodes)
         val treeOfCutNodes = createTree(PriorityQueue(cutLeafs))
-        println("Tree of Cut Leaves")
-        print(treeOfCutNodes.toString())
-        println("Original Tree after cut")
-        print(originalTree.toString())
         //add new node to tree at depthToAddNewTree with minimum weight
         var depthToAddNewTree:Int =  maxDepth - treeOfCutNodes.largestAmountOfStepsToLeaf - 1 //test
         val newRoot = TreeNode.empty()

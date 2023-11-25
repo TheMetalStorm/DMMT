@@ -19,7 +19,6 @@ data class DHT(val symbolToCodeMap: HashMap<Int, BitStream>, val huffmanTableNum
         var hufmanTableInfo: UInt = 0u;
         hufmanTableInfo = hufmanTableInfo or huffmanTableNum.toUInt()
         hufmanTableInfo = hufmanTableInfo or ((huffmanTableType shl 4).toUInt())
-        print(hufmanTableInfo)
         bitStream.addByteToStream(arrayListOf(0xffu, 0xc4u, lengthHigh, lengthLow, hufmanTableInfo.toUByte()))
         //TODO: Anzahl von Symbolen mit Kodelängen von 1..16 (Summe
         //dieser Anzahlen ist Gesamtzahl der Symbole, muss <= 256)
