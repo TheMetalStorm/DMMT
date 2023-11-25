@@ -4,32 +4,75 @@ package datatypes
 data class TreeNode(val symbol: Int, val frequency: Int, var largestAmountOfStepsToLeaf: Int){
     var parent: TreeNode? = null
 
-    var children:MutableList<TreeNode> = mutableListOf()
+    var leftChild: TreeNode? = null
+    var rightChild: TreeNode? = null
 
+    fun removeUnwantedNodes() {
+        if (leftChild?.shouldRemove() == true) {
+            leftChild = null
+        } else {
+            leftChild?.removeUnwantedNodes()
+        }
+
+        if (rightChild?.shouldRemove() == true) {
+            rightChild = null
+        } else {
+            rightChild?.removeUnwantedNodes()
+        }
+    }
+
+    private fun TreeNode?.shouldRemove(): Boolean {
+        return this?.let { node ->
+            node.symbol == Int.MIN_VALUE && (node.leftChild == null || node.leftChild?.symbol == Int.MIN_VALUE) &&
+                    (node.rightChild == null || node.rightChild?.symbol == Int.MIN_VALUE)
+        } ?: true
+    }
     fun addChild(node: TreeNode){
-        children.add(node)
+        if(rightChild == null)
+        {
+            node.parent = this
+            rightChild = node
+        }
+
+        else{
+            node.parent = this
+            leftChild = node
+        }
+
+    }
+
+    fun addLeft(node: TreeNode){
+
+            node.parent = this
+            leftChild = node
+
+
+    }
+
+    fun addRight(node: TreeNode){
+
         node.parent = this
+        rightChild = node
+
+
     }
     override fun toString(): String {
-        val buffer = java.lang.StringBuilder(500)
+        val buffer = StringBuilder(500)
         print(buffer, "", "")
-        return buffer.toString()    }
+        return buffer.toString()
+    }
 
     private fun print(buffer: StringBuilder, prefix: String, childrenPrefix: String) {
         buffer.append(prefix)
-        buffer.append(symbol)
-        buffer.append('\n')
-        val it: Iterator<TreeNode> = children.iterator()
-        while (it.hasNext()) {
+        buffer.append("$symbol, frequency=$frequency")
 
-            val next = it.next()
-            if (it.hasNext()) {
-                next.print(buffer, "$childrenPrefix├0─ ", "$childrenPrefix│   ")
-            } else {
-                next.print(buffer, "$childrenPrefix└1─ ", "$childrenPrefix    ")
-            }
+        buffer.append('\n')
+        if (leftChild != null || rightChild != null) {
+            leftChild?.print(buffer, "$childrenPrefix├0── ", "$childrenPrefix│   ")
+            rightChild?.print(buffer, "$childrenPrefix└1── ", "$childrenPrefix    ")
         }
     }
+
     companion object {
         fun empty(): TreeNode{
             return TreeNode(Int.MIN_VALUE, Int.MAX_VALUE, 0)

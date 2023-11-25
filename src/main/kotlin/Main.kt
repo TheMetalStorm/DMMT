@@ -41,6 +41,7 @@ fun main() {
 
     val huffman = Huffman()
     val originalMessage = "CLiwrJ77mxYbbjJuFK44D4UL6qKtXrT1HWEHLgdHh107NGduCaJMLMkk4mfUQrA468SJYYBPBkfQdMRTuJvcZxmdjnV4XFyHPKBQdeDm12MKJePfCXhht6kePLFcU0r7A45Z6Kht4JwvXaUUw11afdvaXyaAFaC4wHZMpC4uhu4WrnitSyT0gPvQ5xc80f9kTz7HUPaq0K2bM8pX85HxjjcA7L8QUDGmPJmi4iRQcFTukpmEumhDNXKye6kMhEKBzV5DRHMLxihCiAEC1MyJHCpgb16hQt9gxWE19vAeT37mgLw0pBCxHgFyYzVMgzQ3i4Lh2XfacngxjnChZQiRqTvLk1bN3QydyhKcn0976wbQEdkrBR5mhW71vD7z769xvrRctHmYMxXqnUR194570eBGCZKvWfDB4QHGx5UYezSaTN1XwJxbGJeqhmdnhGMeyLhU5SmDTJWZHFMAn9zwbR303z4KS4KVS6hmT9CWp0PmYdaEQHMa"
+//    val originalMessage = "AAAAABBBBBBBBCCCDDDEEEEEEEFFFFFFFFFFFFFFGGG"
     val (encodedMessage, symbolToCodeMap) = huffman.encode(originalMessage.toCharArray().map { it.code }.toIntArray())
 
 //    for (symbol in symbolToCodeMap) {

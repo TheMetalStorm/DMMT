@@ -1,4 +1,3 @@
-import com.sun.source.tree.Tree
 import datatypes.BitStream
 import datatypes.TreeNode
 import java.util.*
@@ -8,16 +7,17 @@ class Huffman {
 
     //limit to 15 so that we can later add a new node at the 1* Bitstream to prevent it, ends with depth = 16
     var symbols: IntArray = intArrayOf()
-    val maxDepth = 15
+    val maxDepth = 6
     fun encode(toEncode: IntArray): HufEncode{
 
         getSymbols(toEncode)
         val sortedOccurences = getOccurences(toEncode)
         val tree = createTree(PriorityQueue(sortedOccurences))
-
+        print("Orig")
+        print(tree.toString())
         //TODO (simon): geht in cutTreeForDepth kaputt
-//        var cutTree = cutTreeForDepth(tree)
-
+        var cutTree = cutTreeForDepth(tree)
+//
 //        while(cutTree.largestAmountOfStepsToLeaf>maxDepth){ //repeat if to deep
 //            cutTree = cutTreeForDepth(cutTree)
 //        }
@@ -25,16 +25,15 @@ class Huffman {
 //        print(cutTree.toString())
 
         //5c, prevent 1* Bitstrean
-        var child = tree
-        while(child.children.size != 0){
-            child = child.children.get(1)
-        }
-        val newBottomRight = TreeNode.empty()
-        child.parent?.children?.set(1, newBottomRight)
-        newBottomRight.children.add(child)
-        newBottomRight.addChild(TreeNode.empty())
+//        var child = tree
+//        while(child.children.size != 0){
+//            child = child.children.get(1)
+//        }
+//        val newBottomRight = TreeNode.empty()
+//        child.parent?.children?.set(1, newBottomRight)
+//        newBottomRight.children.add(child)
+//        newBottomRight.addChild(TreeNode.empty())
 
-        print(tree.toString())
 
         val symbolToBitstreamMap = getSymbolToBitstreamMap(tree, sortedOccurences)
         val encoded = BitStream()
@@ -48,6 +47,7 @@ class Huffman {
         symbols = toEncode.distinct().toIntArray()
     }
 
+
     private fun cutTreeForDepth(originalTree:TreeNode): TreeNode{
         val currentDepth = 0
         val cutNodes = arrayListOf<TreeNode>()
@@ -56,44 +56,80 @@ class Huffman {
         if(cutNodes.isEmpty()){
             return originalTree
         }
+
+        resetDepthsAfterCutNode(originalTree)
+        print("orig after cut")
+        print(originalTree.toString())
         //build new tree with cut nodes
         val cutLeafs:PriorityQueue<TreeNode> = getLeaves(cutNodes)
         val treeOfCutNodes = createTree(PriorityQueue(cutLeafs))
+        print("tree of cut nodes")
+
+        print(treeOfCutNodes.toString())
         //add new node to tree at depthToAddNewTree with minimum weight
         var depthToAddNewTree:Int =  maxDepth - treeOfCutNodes.largestAmountOfStepsToLeaf - 1 //test
         val newRoot = TreeNode.empty()
         if(depthToAddNewTree == 0){ //root for treeOfCutNodes == root of originalTree
             //set new node as parent -> set cutTree left and originalTree right
-            newRoot.addChild(treeOfCutNodes)
-            newRoot.addChild(originalTree)
+            newRoot.addLeft( treeOfCutNodes)
+            newRoot.addRight(originalTree)
             newRoot.largestAmountOfStepsToLeaf = Math.max(treeOfCutNodes.largestAmountOfStepsToLeaf, originalTree.largestAmountOfStepsToLeaf)+1
             return newRoot
         }
         else {
-            var iterateChild:TreeNode = originalTree
-            while (depthToAddNewTree > 0) { //root for treeOfCutNodes != root of originalTree
-                iterateChild = iterateChild.children[0] // always move to the smaller one ATTENTION: small child could not have other needed children
-                depthToAddNewTree--
-            }
-            iterateChild.parent?.children?.set(0, newRoot)
+//            while (depthToAddNewTree > 0) { //root for treeOfCutNodes != root of originalTree
+//                iterateChild = iterateChild.leftChild!! // always move to the smaller one ATTENTION: small child could not have other needed children
+//                depthToAddNewTree--
+//            }
+//            iterateChild.parent?.leftChild = newRoot
 
-//            val nodesOnLevelToAdd = arrayListOf<TreeNode>()
-//            findNodesInDepth(depthToAddNewTree, originalTree, currentDepth, nodesOnLevelToAdd, false)
-//            val iterateChild = nodesOnLevelToAdd.minBy { it.frequency }
-//            iterateChild.parent?.children?.set(0, newRoot)
+            val nodesOnLevelToAdd = arrayListOf<TreeNode>()
+            findNodesInDepth(depthToAddNewTree, originalTree, currentDepth, nodesOnLevelToAdd, false)
+            val iterateChild = nodesOnLevelToAdd.minBy { it.frequency }
+            iterateChild.parent?.addLeft(newRoot)
 
             if(treeOfCutNodes.frequency<=iterateChild.frequency){
-                newRoot.addChild(treeOfCutNodes)
-                newRoot.addChild(iterateChild)
+                newRoot.addLeft(treeOfCutNodes)
+                newRoot.addRight(iterateChild)
             }
             else{
-                newRoot.addChild(iterateChild)
-                newRoot.addChild(treeOfCutNodes)
+                newRoot.addLeft(iterateChild)
+                newRoot.addRight(treeOfCutNodes)
             }
             return originalTree
 
         }
     }
+
+    private fun resetDepthsAfterCutNode(originalTree: TreeNode) {
+
+        originalTree.largestAmountOfStepsToLeaf = 0
+        setZero(originalTree.leftChild)
+        setZero(originalTree.rightChild)
+        val cutNodes = arrayListOf<TreeNode>()
+        findNodesInDepth(maxDepth-1, originalTree, 0, cutNodes, false)
+        for (cutNode in cutNodes) {
+            var node = cutNode
+            node.largestAmountOfStepsToLeaf = 0
+            while(node.parent != null){
+                val currentDepth = node.largestAmountOfStepsToLeaf
+                node = node.parent!!
+                if(node.largestAmountOfStepsToLeaf< currentDepth+1)
+                    node.largestAmountOfStepsToLeaf = currentDepth +1
+            }
+        }
+    }
+
+    private fun setZero(child: TreeNode?) {
+        child!!.largestAmountOfStepsToLeaf = 0
+        if(child.leftChild != null){
+            setZero(child.leftChild!!)
+        }
+        if(child.rightChild != null){
+            setZero(child.rightChild!!)
+        }
+    }
+
 
     private fun getLeaves(cutNodes: java.util.ArrayList<TreeNode>): PriorityQueue<TreeNode> {
         val result = PriorityQueue(Comparator.comparing(TreeNode::largestAmountOfStepsToLeaf).thenComparing(TreeNode::frequency))
@@ -109,8 +145,11 @@ class Huffman {
             result.add(node)
         }
         else{
-            for (child in node.children) {
-                getLeavesRec(child, result)
+            if(node.rightChild != null){
+                getLeavesRec(node.rightChild!!, result)
+            }
+            if(node.leftChild != null){
+                getLeavesRec(node.leftChild!!, result)
             }
         }
 
@@ -118,17 +157,28 @@ class Huffman {
 
     private fun findNodesInDepth(depthToCheck:Int, tree: TreeNode, currentDepth: Int, newTree: ArrayList<TreeNode>, cut: Boolean) {
         if(currentDepth == depthToCheck-1){
-            for(child in tree.children) {
-                newTree.add(child)
+            if(tree.rightChild != null){
+                newTree.add(tree.rightChild!!)
             }
-            if(cut)
-                tree.children.clear();
+            if(tree.leftChild != null){
+                newTree.add(tree.leftChild!!)
+            }
+
+            if(cut){
+                tree.leftChild = null
+                tree.rightChild = null
+            }
+                ;
         }
         else{
             val oldDepth = currentDepth
-            for(child in tree.children) {
-                findNodesInDepth(depthToCheck, child,oldDepth+1, newTree, cut)
+            if(tree.rightChild != null){
+                findNodesInDepth(depthToCheck, tree.rightChild!!,oldDepth+1, newTree, cut)
             }
+            if(tree.leftChild != null){
+                findNodesInDepth(depthToCheck, tree.leftChild!!,oldDepth+1, newTree, cut)
+            }
+
         }
     }
 
@@ -144,7 +194,7 @@ class Huffman {
 
     private fun getBitstreamFromTree(currentSymbol: Int, tree: TreeNode, bitstreamForSymbol: BitStream, curBit: Int) : BitStream {
         // Check if current node is a leaf and contains the symbol we're looking for
-        if (tree.children.isEmpty()) {
+        if (tree.leftChild == null && tree.rightChild == null) {
             if (currentSymbol == tree.symbol) {
                 // Found the symbol, so trim the bitstream and set the insert index
                 bitstreamForSymbol.removeBitsNotNeededStartFromIndex(curBit)
@@ -157,7 +207,7 @@ class Huffman {
         } else {
             // Traverse the right subtree with '1' added to the bitstream
             bitstreamForSymbol.addToList(1)
-            val rightSearch = getBitstreamFromTree(currentSymbol, tree.children[1], bitstreamForSymbol, curBit + 1)
+            val rightSearch = getBitstreamFromTree(currentSymbol, tree.rightChild!!, bitstreamForSymbol, curBit + 1)
             if (rightSearch != BitStream()) {
                 return rightSearch // Found the symbol in the right subtree
             }
@@ -165,7 +215,7 @@ class Huffman {
 
             // Traverse the left subtree with '0' added to the bitstream
             bitstreamForSymbol.addToList(0)
-            val leftSearch = getBitstreamFromTree(currentSymbol, tree.children[0], bitstreamForSymbol, curBit + 1)
+            val leftSearch = getBitstreamFromTree(currentSymbol, tree.leftChild!!, bitstreamForSymbol, curBit + 1)
             if (leftSearch != BitStream()) {
                 return leftSearch // Found the symbol in the left subtree
             }
@@ -181,8 +231,8 @@ class Huffman {
             val one = sortedOccurences.poll();
             val two = sortedOccurences.poll();
             val currentNode: TreeNode = TreeNode(Int.MIN_VALUE, one.frequency + two.frequency, Math.max(one.largestAmountOfStepsToLeaf, two.largestAmountOfStepsToLeaf)+1);
-            currentNode.addChild(one)
-            currentNode.addChild(two)
+            currentNode.addLeft(one)
+            currentNode.addRight(two)
             sortedOccurences.add(currentNode)
         }
         return sortedOccurences.poll()
