@@ -2,6 +2,7 @@ import com.sun.source.tree.Tree
 import datatypes.BitStream
 import datatypes.TreeNode
 import java.util.*
+import java.util.stream.Collectors.toList
 import kotlin.collections.ArrayList
 
 class Huffman {
@@ -175,10 +176,12 @@ class Huffman {
 
 
     private fun createTree(sortedOccurences: PriorityQueue<TreeNode>): TreeNode {
+     //TODO: Filter empty nodes away from sortedOccurences ?
         while (sortedOccurences.size != 1){
             val one = sortedOccurences.poll()
             val two = sortedOccurences.poll()
-            val currentNode = TreeNode(Int.MIN_VALUE, one.frequency + two.frequency, Math.max(one.largestAmountOfStepsToLeaf, two.largestAmountOfStepsToLeaf)+1);
+            val currentNode = TreeNode(Int.MIN_VALUE, one.frequency + two.frequency, Math.max(one.largestAmountOfStepsToLeaf, two.largestAmountOfStepsToLeaf)+1)
+
             currentNode.addChild(one)
             currentNode.addChild(two)
             sortedOccurences.add(currentNode)
