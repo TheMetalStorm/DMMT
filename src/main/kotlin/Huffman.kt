@@ -10,7 +10,6 @@ class Huffman {
     var symbols: IntArray = intArrayOf()
     val maxDepth = 15
     fun encode(toEncode: IntArray): HufEncode{
-
         getSymbols(toEncode)
         val sortedOccurences = getOccurences(toEncode)
         val tree = createTree(PriorityQueue(sortedOccurences))
@@ -100,11 +99,10 @@ class Huffman {
         for (cutNode in cutNodes) {
             getLeavesRec(cutNode, result)
         }
-        return result;
+        return result
     }
 
     private fun getLeavesRec(node: TreeNode, result: PriorityQueue<TreeNode>) {
-
         if(node.largestAmountOfStepsToLeaf == 0){
             result.add(node)
         }
@@ -122,7 +120,7 @@ class Huffman {
                 newTree.add(child)
             }
             if(cut)
-                tree.children.clear();
+                tree.children.clear()
         }
         else{
             val oldDepth = currentDepth
@@ -133,7 +131,7 @@ class Huffman {
     }
 
     private fun getSymbolToBitstreamMap(tree: TreeNode, sortedOccurences: PriorityQueue<TreeNode>): HashMap<Int, BitStream> {
-        var result: HashMap<Int, BitStream> = hashMapOf()
+        val result: HashMap<Int, BitStream> = hashMapOf()
         while (sortedOccurences.isNotEmpty()){
             val currentSymbol = sortedOccurences.poll().symbol
             val bitstreamForSymbol = BitStream()
@@ -145,14 +143,14 @@ class Huffman {
     private fun getBitstreamFromTree(currentSymbol: Int, tree: TreeNode, bitstreamForSymbol: BitStream, curBit: Int) : BitStream {
         // Check if current node is a leaf and contains the symbol we're looking for
         if (tree.children.isEmpty()) {
-            if (currentSymbol == tree.symbol) {
+            return if (currentSymbol == tree.symbol) {
                 // Found the symbol, so trim the bitstream and set the insert index
                 bitstreamForSymbol.removeBitsNotNeededStartFromIndex(curBit)
                 bitstreamForSymbol.byteInsertIndex = curBit
-                return bitstreamForSymbol
+                bitstreamForSymbol
             } else {
                 // Not the symbol we're looking for, backtrack
-                return BitStream() // Or some indication that the symbol was not found in this path
+                BitStream() // Or some indication that the symbol was not found in this path
             }
         } else {
             // Traverse the right subtree with '1' added to the bitstream
@@ -178,9 +176,9 @@ class Huffman {
 
     private fun createTree(sortedOccurences: PriorityQueue<TreeNode>): TreeNode {
         while (sortedOccurences.size != 1){
-            val one = sortedOccurences.poll();
-            val two = sortedOccurences.poll();
-            val currentNode: TreeNode = TreeNode(Int.MIN_VALUE, one.frequency + two.frequency, Math.max(one.largestAmountOfStepsToLeaf, two.largestAmountOfStepsToLeaf)+1);
+            val one = sortedOccurences.poll()
+            val two = sortedOccurences.poll()
+            val currentNode = TreeNode(Int.MIN_VALUE, one.frequency + two.frequency, Math.max(one.largestAmountOfStepsToLeaf, two.largestAmountOfStepsToLeaf)+1);
             currentNode.addChild(one)
             currentNode.addChild(two)
             sortedOccurences.add(currentNode)
@@ -198,7 +196,6 @@ class Huffman {
     }
 
     fun decode(hufEncode: HufEncode): IntArray{
-
         val returnMessage: MutableList<Int> = mutableListOf();
         val message = hufEncode.encodedMessage
         val map = hufEncode.symbolToCodeMap
