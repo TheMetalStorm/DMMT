@@ -7,35 +7,38 @@ class Huffman {
 
     //limit to 15 so that we can later add a new node at the 1* Bitstream to prevent it, ends with depth = 16
     var symbols: IntArray = intArrayOf()
-    val maxDepth = 6
+    val maxDepth = 15
     fun encode(toEncode: IntArray): HufEncode{
 
         getSymbols(toEncode)
         val sortedOccurences = getOccurences(toEncode)
         val tree = createTree(PriorityQueue(sortedOccurences))
-        print("Orig")
-        print(tree.toString())
-        //TODO (simon): geht in cutTreeForDepth kaputt
-        var cutTree = cutTreeForDepth(tree)
-//
-//        while(cutTree.largestAmountOfStepsToLeaf>maxDepth){ //repeat if to deep
-//            cutTree = cutTreeForDepth(cutTree)
-//        }
-//        println("resulting Tree")
-//        print(cutTree.toString())
+        var treeWithRightLength: TreeNode
 
+        if(tree.largestAmountOfStepsToLeaf > maxDepth){
+            treeWithRightLength = cutTreeForDepth(tree)
+            while(treeWithRightLength.largestAmountOfStepsToLeaf>maxDepth){ //repeat if to deep
+                treeWithRightLength = cutTreeForDepth(treeWithRightLength)
+            }
+        }
+        else{
+            treeWithRightLength = tree
+        }
+
+
+        print("a")
         //5c, prevent 1* Bitstrean
-//        var child = tree
-//        while(child.children.size != 0){
-//            child = child.children.get(1)
-//        }
-//        val newBottomRight = TreeNode.empty()
-//        child.parent?.children?.set(1, newBottomRight)
-//        newBottomRight.children.add(child)
-//        newBottomRight.addChild(TreeNode.empty())
+        var child = treeWithRightLength
+        while(child.rightChild != null){
+            child = child.rightChild!!
+        }
+        val newBottomRight = TreeNode.empty()
+        child.parent?.addRight(newBottomRight)
+        newBottomRight.addLeft(child)
+        newBottomRight.addRight(TreeNode.empty())
 
 
-        val symbolToBitstreamMap = getSymbolToBitstreamMap(tree, sortedOccurences)
+        val symbolToBitstreamMap = getSymbolToBitstreamMap(treeWithRightLength, sortedOccurences)
         val encoded = BitStream()
         for (symbol in toEncode) {
             encoded.addBitStreamUntilByteInsertIndex(symbolToBitstreamMap.getValue(symbol))
@@ -58,19 +61,16 @@ class Huffman {
         }
 
         resetDepthsAfterCutNode(originalTree)
-        print("orig after cut")
-        print(originalTree.toString())
         //build new tree with cut nodes
         val cutLeafs:PriorityQueue<TreeNode> = getLeaves(cutNodes)
-        val treeOfCutNodes = createTree(PriorityQueue(cutLeafs))
-        print("tree of cut nodes")
-
-        print(treeOfCutNodes.toString())
+        val treeOfCutNodes = createTreeB(PriorityQueue(cutLeafs))
         //add new node to tree at depthToAddNewTree with minimum weight
         var depthToAddNewTree:Int =  maxDepth - treeOfCutNodes.largestAmountOfStepsToLeaf - 1 //test
         val newRoot = TreeNode.empty()
-        if(depthToAddNewTree == 0){ //root for treeOfCutNodes == root of originalTree
+        if(depthToAddNewTree <= 0){ //root for treeOfCutNodes == root of originalTree
             //set new node as parent -> set cutTree left and originalTree right
+            if(isEmptyTree(originalTree))
+                return treeOfCutNodes
             newRoot.addLeft( treeOfCutNodes)
             newRoot.addRight(originalTree)
             newRoot.largestAmountOfStepsToLeaf = Math.max(treeOfCutNodes.largestAmountOfStepsToLeaf, originalTree.largestAmountOfStepsToLeaf)+1
@@ -105,6 +105,27 @@ class Huffman {
             return originalTree
 
         }
+    }
+
+    private fun isEmptyTree(originalTree: TreeNode): Boolean {
+        var notEmpty: MutableList<Boolean> = mutableListOf();
+
+        isEmptyTreeRec(originalTree, notEmpty)
+
+
+        return notEmpty.isEmpty()
+    }
+
+    private fun isEmptyTreeRec(originalTree: TreeNode, notEmpty: MutableList<Boolean>) {
+        if(originalTree.symbol != Int.MIN_VALUE){
+            notEmpty.add(true);
+        }
+        if(originalTree.leftChild != null)
+        isEmptyTreeRec(originalTree.leftChild!!, notEmpty)
+        if(originalTree.rightChild != null)
+
+        isEmptyTreeRec(originalTree.rightChild!!, notEmpty)
+
     }
 
     private fun resetDepthsAfterCutNode(originalTree: TreeNode) {
@@ -147,7 +168,7 @@ class Huffman {
 
     private fun getLeavesRec(node: TreeNode, result: PriorityQueue<TreeNode>) {
 
-        if(node.largestAmountOfStepsToLeaf == 0){
+        if(node.largestAmountOfStepsToLeaf == 0 && node.symbol != Int.MIN_VALUE){
             result.add(node)
         }
         else{
@@ -204,28 +225,35 @@ class Huffman {
             if (currentSymbol == tree.symbol) {
                 // Found the symbol, so trim the bitstream and set the insert index
                 bitstreamForSymbol.removeBitsNotNeededStartFromIndex(curBit)
-                bitstreamForSymbol.byteInsertIndex = curBit
+                var newByteInsertIndex = curBit
+                while(newByteInsertIndex>7){
+                    newByteInsertIndex = newByteInsertIndex % 7
+                }
+                bitstreamForSymbol.byteInsertIndex = newByteInsertIndex
                 return bitstreamForSymbol
             } else {
                 // Not the symbol we're looking for, backtrack
                 return BitStream() // Or some indication that the symbol was not found in this path
             }
         } else {
-            // Traverse the right subtree with '1' added to the bitstream
-            bitstreamForSymbol.addToList(1)
-            val rightSearch = getBitstreamFromTree(currentSymbol, tree.rightChild!!, bitstreamForSymbol, curBit + 1)
-            if (rightSearch != BitStream()) {
-                return rightSearch // Found the symbol in the right subtree
+            if(tree.rightChild != null) {
+                // Traverse the right subtree with '1' added to the bitstream
+                bitstreamForSymbol.addToList(1)
+                val rightSearch = getBitstreamFromTree(currentSymbol, tree.rightChild!!, bitstreamForSymbol, curBit + 1)
+                if (rightSearch != BitStream()) {
+                    return rightSearch // Found the symbol in the right subtree
+                }
+                bitstreamForSymbol.revert() // Backtrack the bit added for the right subtree
             }
-            bitstreamForSymbol.revert() // Backtrack the bit added for the right subtree
-
             // Traverse the left subtree with '0' added to the bitstream
-            bitstreamForSymbol.addToList(0)
-            val leftSearch = getBitstreamFromTree(currentSymbol, tree.leftChild!!, bitstreamForSymbol, curBit + 1)
-            if (leftSearch != BitStream()) {
-                return leftSearch // Found the symbol in the left subtree
+            if(tree.leftChild != null){
+                bitstreamForSymbol.addToList(0)
+                val leftSearch = getBitstreamFromTree(currentSymbol, tree.leftChild!!, bitstreamForSymbol, curBit + 1)
+                if (leftSearch != BitStream()) {
+                    return leftSearch // Found the symbol in the left subtree
+                }
+                bitstreamForSymbol.revert()// Backtrack the bit added for the left subtree
             }
-            bitstreamForSymbol.revert() // Backtrack the bit added for the left subtree
         }
 
         return BitStream() // Or some indication that the symbol was not found in this path
@@ -233,6 +261,18 @@ class Huffman {
 
 
     private fun createTree(sortedOccurences: PriorityQueue<TreeNode>): TreeNode {
+        while (sortedOccurences.size != 1){
+            val one = sortedOccurences.poll();
+            val two = sortedOccurences.poll();
+            val currentNode: TreeNode = TreeNode(Int.MIN_VALUE, one.frequency + two.frequency, Math.max(one.largestAmountOfStepsToLeaf, two.largestAmountOfStepsToLeaf)+1);
+            currentNode.addNode(one)
+            currentNode.addNode(two)
+            sortedOccurences.add(currentNode)
+        }
+        return sortedOccurences.poll()
+    }
+
+    private fun createTreeB(sortedOccurences: PriorityQueue<TreeNode>): TreeNode {
         while (sortedOccurences.size != 1){
             val one = sortedOccurences.poll();
             val two = sortedOccurences.poll();
@@ -245,7 +285,7 @@ class Huffman {
     }
 
     fun getOccurences(toEncode: IntArray): PriorityQueue<TreeNode> {
-        val occurences = PriorityQueue(Comparator.comparing(TreeNode::largestAmountOfStepsToLeaf).thenComparing(TreeNode::frequency))
+        val occurences = PriorityQueue(Comparator.comparing(TreeNode::frequency))
         for (symbol in symbols) {
             val numOccurences = toEncode.filter { it == symbol }.size
             occurences.add(TreeNode(symbol, numOccurences, 0))

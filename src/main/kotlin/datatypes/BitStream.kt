@@ -34,10 +34,10 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
     fun addBitStreamUntilByteInsertIndex(streamToAdd: BitStream) {
 
 
-        for ((index, uByte) in streamToAdd.values.withIndex()) {
+          for ((index, uByte) in streamToAdd.values.withIndex()) {
             if(index != streamToAdd.values.size-1){
                 for(j in (0..7))
-                this.addToList(uByte.getBit(j))
+                    this.addToList(uByte.getBit(j))
             }
             else{
                 if(streamToAdd.byteInsertIndex == 0)
