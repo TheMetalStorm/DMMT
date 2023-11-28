@@ -226,9 +226,12 @@ class Huffman {
                 // Found the symbol, so trim the bitstream and set the insert index
                 bitstreamForSymbol.removeBitsNotNeededStartFromIndex(curBit)
                 var newByteInsertIndex = curBit
-                while(newByteInsertIndex>7){
-                    newByteInsertIndex = newByteInsertIndex % 7
+
+                newByteInsertIndex = (newByteInsertIndex + 1 ) % 8
+                if(newByteInsertIndex == 0) {
+                    newByteInsertIndex = 8
                 }
+
                 bitstreamForSymbol.byteInsertIndex = newByteInsertIndex
                 return bitstreamForSymbol
             } else {
