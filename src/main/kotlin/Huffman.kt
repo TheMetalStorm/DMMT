@@ -26,11 +26,10 @@ class Huffman {
         }
 
 
-        print("a")
         //5c, prevent 1* Bitstrean
         var child = treeWithRightLength
         while(child.rightChild != null){
-            child = child.rightChild!!
+            child = child.rightChild as TreeNode
         }
         val newBottomRight = TreeNode.empty()
         child.parent?.addRight(newBottomRight)
@@ -121,10 +120,10 @@ class Huffman {
             notEmpty.add(true);
         }
         if(originalTree.leftChild != null)
-        isEmptyTreeRec(originalTree.leftChild!!, notEmpty)
+        isEmptyTreeRec(originalTree.leftChild as TreeNode, notEmpty)
         if(originalTree.rightChild != null)
 
-        isEmptyTreeRec(originalTree.rightChild!!, notEmpty)
+        isEmptyTreeRec(originalTree.rightChild as TreeNode, notEmpty)
 
     }
 
@@ -148,13 +147,16 @@ class Huffman {
     }
 
     private fun setZero(child: TreeNode?) {
-        child!!.largestAmountOfStepsToLeaf = 0
-        if(child.leftChild != null){
-            setZero(child.leftChild!!)
-        }
-        if(child.rightChild != null){
-            setZero(child.rightChild!!)
-        }
+        if(child != null) {
+            child.largestAmountOfStepsToLeaf = 0
+                if(child.leftChild != null){
+                    setZero(child.leftChild!!)
+                }
+                if(child.rightChild != null){
+                    setZero(child.rightChild!!)
+                }
+            }
+
     }
 
 
@@ -227,11 +229,12 @@ class Huffman {
                 bitstreamForSymbol.removeBitsNotNeededStartFromIndex(curBit)
                 var newByteInsertIndex = curBit
 
-                newByteInsertIndex = (newByteInsertIndex + 1 ) % 8
-                if(newByteInsertIndex == 0) {
-                    newByteInsertIndex = 8
+                if(newByteInsertIndex >8){
+                    newByteInsertIndex = (newByteInsertIndex + 1 ) % 8
+                    if(newByteInsertIndex == 0) {
+                        newByteInsertIndex = 8
+                    }
                 }
-
                 bitstreamForSymbol.byteInsertIndex = newByteInsertIndex
                 return bitstreamForSymbol
             } else {
@@ -239,24 +242,26 @@ class Huffman {
                 return BitStream() // Or some indication that the symbol was not found in this path
             }
         } else {
-            if(tree.rightChild != null) {
-                // Traverse the right subtree with '1' added to the bitstream
-                bitstreamForSymbol.addToList(1)
-                val rightSearch = getBitstreamFromTree(currentSymbol, tree.rightChild!!, bitstreamForSymbol, curBit + 1)
-                if (rightSearch != BitStream()) {
-                    return rightSearch // Found the symbol in the right subtree
-                }
-                bitstreamForSymbol.revert() // Backtrack the bit added for the right subtree
-            }
             // Traverse the left subtree with '0' added to the bitstream
             if(tree.leftChild != null){
                 bitstreamForSymbol.addToList(0)
-                val leftSearch = getBitstreamFromTree(currentSymbol, tree.leftChild!!, bitstreamForSymbol, curBit + 1)
+                val leftSearch = getBitstreamFromTree(currentSymbol, tree.leftChild as TreeNode, bitstreamForSymbol, curBit + 1)
                 if (leftSearch != BitStream()) {
                     return leftSearch // Found the symbol in the left subtree
                 }
                 bitstreamForSymbol.revert()// Backtrack the bit added for the left subtree
             }
+
+            if(tree.rightChild != null) {
+                // Traverse the right subtree with '1' added to the bitstream
+                bitstreamForSymbol.addToList(1)
+                val rightSearch = getBitstreamFromTree(currentSymbol, tree.rightChild as TreeNode, bitstreamForSymbol, curBit + 1)
+                if (rightSearch != BitStream()) {
+                    return rightSearch // Found the symbol in the right subtree
+                }
+                bitstreamForSymbol.revert() // Backtrack the bit added for the right subtree
+            }
+
         }
 
         return BitStream() // Or some indication that the symbol was not found in this path

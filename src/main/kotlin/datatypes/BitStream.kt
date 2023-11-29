@@ -115,13 +115,14 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
         if (byteInsertIndex == 0){
             return
         }
-        if (byteInsertIndex % 7 == 1 && byteInsertIndex>7){
+        if(byteInsertIndex == 1 && values.size != 1){
             values.removeLast()
-            byteInsertIndex = 7
+            byteInsertIndex = 8
+            return
         }
-        else{
-            byteInsertIndex--
-        }
+
+        byteInsertIndex--
+
     }
 
      fun modifyByteAfterLastRelevantBit(byteToModify: UByte, bitToAdd: Int): UByte {
