@@ -1,6 +1,7 @@
 package datatypes
 
 import java.io.File
+import java.lang.Exception
 import java.util.stream.Collectors
 import java.util.stream.Collectors.toList
 
@@ -106,4 +107,19 @@ class ImageRGB (var pixels: Array<Array<RGB>>) {
         }
     }
 
+    fun getChannel(channel: Int): Channel{
+        var result = Channel(w, h)
+        for (x in 0..<w) {
+            for (y in 0..<h) {
+                val color = getPixel(x, y)
+                val channelValue =
+                    if (channel == 0) color.r
+                    else if(channel == 1) color.g
+                    else if(channel == 2) color.b
+                    else throw Exception("getChannel only supports channels 0,1,2")
+                result.setValue(x, y, channelValue.toDouble())
+            }
+        }
+        return result
+    }
 }

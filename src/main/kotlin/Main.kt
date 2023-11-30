@@ -2,6 +2,8 @@ import JPGSegments.APP0
 import JPGSegments.DHT
 import JPGSegments.SOF0
 import datatypes.BitStream
+import datatypes.ImageRGB
+import DCT.DCT
 
 fun main() {
 //    val image = ImageRGB.readPPM("src/main/image.ppm", 8, 8)
@@ -86,4 +88,13 @@ fun main() {
 //    bitstream.printBits()
 //
     bitstream.saveToFileAsBytes("test.jpeg")
+    println()
+
+    println()
+    val image = ImageRGB.readPPM("src/main/kotlin/DCT/red.ppm", 8, 8)
+    val redChannel = image.getChannel(0)
+//    redChannel.print()
+    val dct = DCT.directDCT(redChannel)
+    dct.print()
+
 }
