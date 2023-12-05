@@ -28,7 +28,6 @@ class DCT{
 
             return result;
         }
-
         private fun calculateDirectDCTValue(data: Channel, i: Int, j: Int, N: Int): Double {
             var result = 1.0
             for (x in 0..<N) {
@@ -47,6 +46,45 @@ class DCT{
             return result
         }
 
+        /**
+         * After calculateInverseDirectDCTValue is no further calculation needed therefore the changes in the
+         * function structure compared to  calculateDirectDCTValue
+         */
+        fun inverseDirectDCT(data: Channel): Channel {
+            check(data)
+            val N = data.width
+            var result = Channel(N, N)
+            for (i in 0..<N ) {
+                for (j in 0..<N ) {
+                    val sum = calculateInverseDirectDCTValue(data, i, j, N)
+                    result.setValue(i, j, sum)
+                }
+            }
+            return result;
+        }
+        private fun calculateInverseDirectDCTValue(data: Channel, i: Int, j: Int, N: Int): Double {
+            var result = 1.0
+            for (x in 0..<N) {
+                for (y in 0..<N) {
+                    //TODO: Test and check if logic for CI and CJ are correct (big ???)
+                    val CI =
+                        if (i == 0) (1/ sqrt(2.0))
+                        else 1.0
+                    val CJ =
+                        if (j == 0) (1/ sqrt(2.0))
+                        else 1.0
+                    val Y = data.getValue(x, y) - 128
+                    val firstCos = cos(((2*x+1)*i*Math.PI)/(2*N))
+                    val secondCos = cos( (((2*y)+1) * j * Math.PI)/(2*N))
+
+                    val curResult = (2/N)*CI*CJ*Y * firstCos * secondCos
+
+                    result += curResult
+
+                }
+            }
+            return result
+        }
         private fun check(data: Channel) {
             val width = data.width
             val height = data.height
