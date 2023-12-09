@@ -7,9 +7,31 @@ import kotlin.math.sqrt
 
 class DCT{
     companion object {
-        fun directDCT(data: Channel): Channel {
+
+        val tileSize = 8
+        fun directDCT(data: Channel): Channel{
             check(data)
             val N = data.width
+            var result = Channel(N, N)
+
+            for (i in 0..<N step tileSize) {
+                for (j in 0..<N step tileSize) {
+
+                    val tileChannel = Channel(8,8, Array(tileSize) { row -> Array(tileSize) { col -> data.getValue(j + col,i + row)  } })
+                    val dctTile = directDCT8x8(tileChannel)
+
+                    // Store the DCT results back in the array or in a new array
+                    for (row in 0..<tileSize) {
+                        for (col in 0..<tileSize) {
+                            result.setValue(j + col, i + row, dctTile.getValue(col,row))
+                        }
+                    }
+                }
+            }
+            return result
+        }
+        private fun directDCT8x8(data: Channel): Channel {
+            val N = 8
             var result = Channel(N, N)
             for (i in 0..<N ) {
                 for (j in 0..<N ) {

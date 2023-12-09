@@ -91,9 +91,10 @@ fun main() {
     println()
 
     println()
-    val image = ImageRGB.readPPM("src/main/kotlin/DCT/red.ppm", 8, 8)
+    val image = ImageRGB.readPPM("src/main/kotlin/DCT/red.ppm", 16, 16)
     val redChannel = image.getChannel(0)
-//    redChannel.print()
+    redChannel.print()
+    println()
     val dct = DCT.directDCT(redChannel)
     dct.print()
 
