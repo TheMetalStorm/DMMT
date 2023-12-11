@@ -280,6 +280,11 @@ class DCT{
         fun araiDct2D(data: Channel): Channel{
             var matrix: Array<Array<Double>> = Array(8){ Array(8){ 0.0}}
             for (y in 0 .. 7) {
+                for (x in 0..7) {
+                    data.setValue(x, y, data.getValue(x, y) - 128)
+                }
+            }
+            for (y in 0 .. 7) {
                 matrix[y] = araiDct1D(data.data[y])
             }
             var transposed: Array<Array<Double>> = Array(8){ Array(8){ 0.0}}
