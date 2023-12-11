@@ -16,9 +16,8 @@ I = [
 102.0 0.0 0.0 0.0 102.0 0.0 0.0 0.0 102.0 0.0 0.0 0.0 102.0 0.0 0.0 0.0; 
 136.0 0.0 0.0 255.0 136.0 0.0 0.0 255.0 136.0 0.0 0.0 255.0 136.0 0.0 0.0 255.0  ]
 
-I = I-128
  I = im2double(I);
-  T = dctmtx(8);
-  dct = @(block_struct) T * block_struct.data * T';
-  format long
-  B = blockproc(I,[8 8],dct)
+ I = I-128;
+T = dctmtx(8);
+dct = @(block_struct) T * block_struct.data * T';
+B = blockproc(I,[8 8],dct)

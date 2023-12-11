@@ -97,6 +97,7 @@ fun main() {
     println()
     redChannel.print()
     val dct = DCT.directDCT(redChannel)
+dct.print()
 //    val toArray2 = DCT.seperateDCT(redChannel).toArray2()
     //toArray2 is a Array<DoubleArray>, convert it to Array<Array<Double>>
 //    val dct = Channel(16,16, toArray2.map { it.toTypedArray() }.toTypedArray())
