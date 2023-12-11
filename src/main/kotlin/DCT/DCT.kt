@@ -6,6 +6,7 @@ import java.lang.Exception
 import kotlin.math.cos
 import kotlin.math.sqrt
 
+
 class DCT{
     companion object {
 
@@ -165,6 +166,37 @@ class DCT{
                 }
             }
             return result
+        }
+
+        fun araiDct(data: Channel): Channel {
+         var result  = data.toSimpleMatrix()
+           for(i in 0..<8){
+               when(i){
+                   0-> {
+                       result[i,1] = result.get(0, i) + result.get(7,i)
+                       result[1,1] = result.get(1, i) + result.get(6,i)
+                       result[2,1] = result.get(3, i) - result.get(4,i)
+                       result[3,1] = result.get(1, i) - result.get(6,i)
+                       result[4,1] = result.get(2, i) + result.get(5,i)
+                       result[5,1] = result.get(3, i) + result.get(4,i)
+                       result[6,1] = result.get(2, i) - result.get(5,i)
+                       result[7,1] = result.get(0, i) + result.get(7,i)
+                   }
+                   1->{
+                       result[i,2] = result.get(0, i) + result.get(5,i)
+                       result[1,2] = result.get(1, i) - result.get(4,i)
+                       result[2,2] = result.get(2, i) - result.get(6,i)
+                       result[3,2] = result.get(1, i) - result.get(4,i)
+                       result[4,2] = result.get(0, i) - result.get(5,i)
+                       result[5,2] = result.get(3, i) + result.get(7,i)
+                       result[6,2] = result.get(3, i) + result.get(6,i)
+                       result[7,2] = result.get(7,i)
+                   }
+               }
+
+           }
+
+          return result
         }
         private fun check(data: Channel) {
             val width = data.width
