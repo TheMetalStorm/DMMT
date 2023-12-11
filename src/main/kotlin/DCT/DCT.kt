@@ -168,7 +168,7 @@ class DCT{
             return result
         }
 
-        fun araiDct(data: Channel): Channel {
+        fun araiDct(data: Channel): SimpleMatrix {
          var result  = data.toSimpleMatrix()
            for(i in 0..<8){
                when(i){
