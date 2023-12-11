@@ -10,8 +10,9 @@ class DCT{
     companion object {
 
         val tileSize = 8
-        private fun seperateDCT8x8(X: SimpleMatrix): SimpleMatrix {
+        private fun seperateDCT8x8(input: SimpleMatrix): SimpleMatrix {
 
+            val X = input.minus(128.0)
             val N = 8
             var A: SimpleMatrix = SimpleMatrix(N,N)
             for (k in 0..<N ) {
