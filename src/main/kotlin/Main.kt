@@ -94,6 +94,8 @@ fun main() {
     println()
     val image = ImageRGB.readPPM("src/main/kotlin/DCT/red.ppm", 16, 16)
     val redChannel = image.getChannel(0)
+    println()
+    redChannel.print()
     val dct = DCT.directDCT(redChannel)
 //    val toArray2 = DCT.seperateDCT(redChannel).toArray2()
     //toArray2 is a Array<DoubleArray>, convert it to Array<Array<Double>>
