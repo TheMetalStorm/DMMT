@@ -58,12 +58,12 @@ class DCT{
             val N = data.width
             var result = Channel(N, N)
 
-            for (i in 0..<N step tileSize) {
-                for (j in 0..<N step tileSize) {
+            for (i in 0..N step tileSize) {
+                for (j in 0..N step tileSize) {
                     val tileChannel = Channel(8,8, Array(tileSize) { row -> Array(tileSize) { col -> data.getValue(j + col,i + row)  } })
                     val dctTile = directDCT8x8(tileChannel)
-                    for (row in 0..<tileSize) {
-                        for (col in 0..<tileSize) {
+                    for (row in 0..tileSize) {
+                        for (col in 0..tileSize) {
                             result.setValue(j + col, i + row, dctTile.getValue(col,row))
                         }
                     }
@@ -74,16 +74,16 @@ class DCT{
         private fun directDCT8x8(data: Channel): Channel {
             val N = 8
             var result = Channel(N, N)
-            for (i in 0..<N ) {
-                for (j in 0..<N ) {
-                    val CI =
-                        if (i == 0) (1/ sqrt(2.0))
+            for (i in 0..N ) {
+                for (j in 0..N ) {
+                    val CI: Double =
+                        if (i == 0) (1.0/ sqrt(2.0))
                         else 1.0
-                    val CJ =
-                        if (j == 0) (1/ sqrt(2.0))
+                    val CJ: Double =
+                        if (j == 0) (1.0/ sqrt(2.0))
                         else 1.0
                     val sum = calculateDirectDCTValue(data, i, j, N)
-                    val newValue= (2.0/N) * CI * CJ * sum
+                    val newValue= 0.25 * CI * CJ * sum
                     result.setValue(i, j, newValue)
                 }
             }
@@ -91,18 +91,38 @@ class DCT{
             return result;
         }
         private fun calculateDirectDCTValue(data: Channel, i: Int, j: Int, N: Int): Double {
-            var result = 1.0
+            var result = 0.0
             for (x in 0..<N) {
                 for (y in 0..<N) {
 
-                    val X = data.getValue(x, y) - 128
-                    val firstCos = cos( (((2*x)+1) * i * Math.PI)/(2*N))
-                    val secondCos = cos( (((2*y)+1) * j * Math.PI)/(2*N))
+                    val X = data.getValue(x, y) - 128.0
+                    val firstCos: Double  = cos( ((2.0*x.toDouble()+1.0) * i.toDouble() * Math.PI) /16.0)
+                    val secondCos: Double  = cos( ((2.0*y.toDouble()+1.0) * j.toDouble() * Math.PI) /16.0)
 
-                    val curResult = X * firstCos * secondCos
+                    val curResult: Double = X * firstCos * secondCos
 
                     result += curResult
 
+                }
+            }
+            return result
+        }
+
+
+        fun inverseDirectDCT(data: Channel): Channel{
+            check(data)
+            val N = data.width
+            var result = Channel(N, N)
+
+            for (i in 0..<N step tileSize) {
+                for (j in 0..<N step tileSize) {
+                    val tileChannel = Channel(8,8, Array(tileSize) { row -> Array(tileSize) { col -> data.getValue(j + col,i + row)  } })
+                    val idctTile = inverseDirectDCT8x8(tileChannel)
+                    for (row in 0..<tileSize) {
+                        for (col in 0..<tileSize) {
+                            result.setValue(j + col, i + row, idctTile.getValue(col,row))
+                        }
+                    }
                 }
             }
             return result
@@ -112,34 +132,33 @@ class DCT{
          * After calculateInverseDirectDCTValue is no further calculation needed therefore the changes in the
          * function structure compared to  calculateDirectDCTValue
          */
-        fun inverseDirectDCT(data: Channel): Channel {
+        fun inverseDirectDCT8x8(data: Channel): Channel {
             check(data)
             val N = data.width
             var result = Channel(N, N)
-            for (i in 0..<N ) {
-                for (j in 0..<N ) {
-                    val sum = calculateInverseDirectDCTValue(data, i, j, N)
-                    result.setValue(i, j, sum)
+            for (x in 0..<N ) {
+                for (y in 0..<N ) {
+                    val sum = calculateInverseDirectDCTValue(data, x, y, N)
+                    result.setValue(x, y, sum + 128.0)
                 }
             }
             return result;
         }
-        private fun calculateInverseDirectDCTValue(data: Channel, i: Int, j: Int, N: Int): Double {
-            var result = 1.0
-            for (x in 0..<N) {
-                for (y in 0..<N) {
-                    //TODO: Test and check if logic for CI and CJ are correct (big ???)
+        private fun calculateInverseDirectDCTValue(data: Channel, x: Int, y: Int, N: Int): Double {
+            var result = 0.0
+            for (i in 0..<N) {
+                for (j in 0..<N) {
                     val CI =
-                        if (i == 0) (1/ sqrt(2.0))
+                        if (i == 0) (1.0/ sqrt(2.0))
                         else 1.0
                     val CJ =
-                        if (j == 0) (1/ sqrt(2.0))
+                        if (j == 0) (1.0/ sqrt(2.0))
                         else 1.0
-                    val Y = data.getValue(x, y) - 128
-                    val firstCos = cos(((2*x+1)*i*Math.PI)/(2*N))
-                    val secondCos = cos( (((2*y)+1) * j * Math.PI)/(2*N))
+                    val Y = data.getValue(i, j)
+                    val firstCos = cos(((2.0*x+1.0)*i*Math.PI)/(2.0*N))
+                    val secondCos = cos( (((2.0*y)+1.0) * j * Math.PI)/(2.0*N))
 
-                    val curResult = (2/N)*CI*CJ*Y * firstCos * secondCos
+                    val curResult = (2.0/N)*CI*CJ*Y * firstCos * secondCos
 
                     result += curResult
 
@@ -260,9 +279,8 @@ class DCT{
 
                 }
             }
-          return result
+            return result
         }
-        
         private fun check(data: Channel) {
             val width = data.width
             val height = data.height

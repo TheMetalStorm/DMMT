@@ -26,9 +26,6 @@ data class Channel (val width: Int, val height: Int, var data: Array<Array<Doubl
         for (row in 0..<height) {
             for (col in 0..<width) {
                 result[row, col] = data[row][col]
-                if(row == 9 || col ==9){
-                    result[row, col] = null
-                }
             }
         }
         return result
