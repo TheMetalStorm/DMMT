@@ -102,10 +102,20 @@ fun main() {
 //    val dct = Channel(16,16, toArray2.map { it.toTypedArray() }.toTypedArray())
 
     val idct = DCT.inverseDirectDCT(dct)
-    println("orig")
-    redChannel.print()
-
-    println("idct")
-    idct.print()
+//    println("orig")
+//    redChannel.print()
+//
+//    println("idct")
+//    idct.print()
+//
+//    val channel = Channel(8,8, Array(8){ Array(8){ kotlin.random.Random.nextDouble()*255 } })
+//    println("random channel")
+//    channel.print()
+//    val dctarai = DCT.araiDct2D(channel)
+//    println("arai orig")
+//    dctarai.print()
+//    println("arai idct")
+//    val inverseDirectDCT = DCT.inverseDirectDCT(dctarai)
+//    idct.print()
 }
 
