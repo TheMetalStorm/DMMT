@@ -93,6 +93,12 @@
             <artifactId>kotlin-stdlib</artifactId>
             <version>1.9.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.ejml</groupId>
+            <artifactId>ejml-kotlin</artifactId>
+            <version>0.43.1</version>
+        </dependency>
+
     </dependencies>
 
 </project>

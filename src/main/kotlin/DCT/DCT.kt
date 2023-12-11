@@ -20,7 +20,6 @@ class DCT{
                     val tileChannel = Channel(8,8, Array(tileSize) { row -> Array(tileSize) { col -> data.getValue(j + col,i + row)  } })
                     val dctTile = directDCT8x8(tileChannel)
 
-                    // Store the DCT results back in the array or in a new array
                     for (row in 0..<tileSize) {
                         for (col in 0..<tileSize) {
                             result.setValue(j + col, i + row, dctTile.getValue(col,row))
@@ -42,7 +41,6 @@ class DCT{
                         if (j == 0) (1/ sqrt(2.0))
                         else 1.0
                     val sum = calculateDirectDCTValue(data, i, j, N)
-
                     val newValue= (2.0/N) * CI * CJ * sum
                     result.setValue(i, j, newValue)
                 }

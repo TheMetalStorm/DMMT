@@ -4,6 +4,7 @@ import JPGSegments.SOF0
 import datatypes.BitStream
 import datatypes.ImageRGB
 import DCT.DCT
+import org.jetbrains.bio.viktor.F64Array
 
 fun main() {
 //    val image = ImageRGB.readPPM("src/main/image.ppm", 8, 8)
@@ -93,8 +94,6 @@ fun main() {
     println()
     val image = ImageRGB.readPPM("src/main/kotlin/DCT/red.ppm", 16, 16)
     val redChannel = image.getChannel(0)
-    redChannel.print()
-    println()
     val dct = DCT.directDCT(redChannel)
     dct.print()
 

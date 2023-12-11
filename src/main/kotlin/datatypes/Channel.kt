@@ -1,5 +1,6 @@
 package datatypes
 
+import org.ejml.simple.SimpleMatrix
 data class Channel (val width: Int, val height: Int, var data: Array<Array<Double>> = Array(height){ Array(width){ 0.0}}) {
     fun getValue(x: Int, y: Int): Double{
         return if (x in 0..<width && y in 0..<height)
@@ -20,5 +21,14 @@ data class Channel (val width: Int, val height: Int, var data: Array<Array<Doubl
         }
     }
 
+    fun toSimpleMatrix(): SimpleMatrix {
+        val result = SimpleMatrix(height, width)
+        for (row in 0..<height) {
+            for (col in 0..<width) {
+                result[row, col] = data[row][col]
+            }
+        }
+        return result
+    }
 
 }
