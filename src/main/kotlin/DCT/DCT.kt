@@ -241,7 +241,7 @@ class DCT{
                         dataMatrix[3, i + 1] = dataMatrix.get(3, i) * s6
                         dataMatrix[4, i + 1] = dataMatrix.get(4, i) * s5
                         dataMatrix[5, i + 1] = dataMatrix.get(5, i) * s1
-                        dataMatrix[6, i + 1] = dataMatrix.get(5, i) * s7
+                        dataMatrix[6, i + 1] = dataMatrix.get(6, i) * s7
                         dataMatrix[7, i + 1] = dataMatrix.get(7, i) * s3
 
                         result[0] = dataMatrix[0, i + 1]
