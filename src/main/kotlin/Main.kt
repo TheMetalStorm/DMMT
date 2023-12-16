@@ -91,6 +91,10 @@ fun main() {
     val redChannel = image.getChannel(0)
 
 
+    val dct = DCT.araiDct2D(redChannel)
+    dct.print()
+
+
 //    val image = ImageRGB.readPPM("src/main/kotlin/DCT/dct4c.ppm", 8, 8)
 //    val redChannel = image.getChannel(0)
     //directDCT Test

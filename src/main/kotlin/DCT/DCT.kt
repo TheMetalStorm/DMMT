@@ -275,6 +275,7 @@ class DCT{
             return result
         }
 
+        //TODO: we get weird values when result should be 0, otherwise the results seem fine?
         fun araiDct2D(data: Channel): Channel{
             var matrix: Array<Array<Double>> = Array(8){ Array(8){ 0.0}}
             for (y in 0 .. 7) {
