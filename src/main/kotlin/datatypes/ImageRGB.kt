@@ -39,6 +39,48 @@ class ImageRGB (var pixels: Array<Array<RGB>>) {
         return result
     }
 
+    fun writePPM(name: String){
+        val stream: BitStream = BitStream()
+
+
+        val header = "P3\r\n${w} ${h}\r\n255\r\n"
+        //header to array of UByte
+
+        //
+        for (uByte in header.toByteArray().toUByteArray()) {
+            stream.addByteToStream(uByte)
+        }
+
+        for (y in 0..<h) {
+            for (x in 0..<w) {
+
+
+                getPixel(x,y).r.toString().toByteArray().toUByteArray().forEach {
+                    stream.addByteToStream(it)
+                }
+                stream.addByteToStream(0x20u)
+                getPixel(x,y).g.toString().toByteArray().toUByteArray().forEach {
+                    stream.addByteToStream(it)
+                }
+                stream.addByteToStream(0x20u)
+                getPixel(x,y).b.toString().toByteArray().toUByteArray().forEach {
+                    stream.addByteToStream(it)
+                }
+                stream.addByteToStream( 0x20u)
+
+
+            }
+            val nl = "\r\n"
+
+            for (uByte in nl.toByteArray().toUByteArray()) {
+                stream.addByteToStream(uByte)
+            }
+
+
+        }
+        stream.saveToFileAsBytes(name)
+
+    }
 
     companion object {
         fun empty(w: Int, h: Int, strideW: Int, strideH: Int ): ImageRGB{
@@ -54,6 +96,8 @@ class ImageRGB (var pixels: Array<Array<RGB>>) {
 
         fun readFileAsLinesUsingBufferedReader(fileName: String): List<String>
                 = File(fileName).bufferedReader().readLines()
+
+
 
         fun readPPM(path: String, strideW: Int, strideH: Int ) : ImageRGB{
             val lines: MutableList<String> = readFileAsLinesUsingBufferedReader(path).filterNot { it.startsWith("#") }

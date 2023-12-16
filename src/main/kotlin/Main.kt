@@ -5,6 +5,7 @@ import datatypes.BitStream
 import datatypes.ImageRGB
 import DCT.DCT
 import datatypes.Channel
+import datatypes.RGB
 import kotlin.system.measureTimeMillis
 
 fun main() {
@@ -93,11 +94,11 @@ fun main() {
 //    println()
 
 //    println()
-    val image = ImageRGB.readPPM("src/main/kotlin/DCT/red.ppm", 16, 16)
-    val redChannel = image.getChannel(0)
-    println()
-    DCT.directDCT(redChannel)
-    redChannel.print()//    val toArray2 = DCT.seperateDCT(redChannel).toArray2()
+//    val image = ImageRGB.readPPM("src/main/kotlin/DCT/red.ppm", 16, 16)
+//    val redChannel = image.getChannel(0)
+//    println()
+//    DCT.directDCT(redChannel)
+//    redChannel.print()//    val toArray2 = DCT.seperateDCT(redChannel).toArray2()
     //toArray2 is a Array<DoubleArray>, convert it to Array<Array<Double>>
 //    val dct = Channel(16,16, toArray2.map { it.toTypedArray() }.toTypedArray())
 
@@ -117,5 +118,14 @@ fun main() {
 //    println("arai idct")
 //    val inverseDirectDCT = DCT.inverseDirectDCT(dctarai)
 //    idct.print()
+
+//    val im = ImageRGB.empty(3840, 2160, 8, 8)
+//    for (y in 0..im.h) {
+//        for (x in 0..im.w) {
+//            im.setPixel(x, y, RGB(((x+y*8) % 256), 0, 0))
+//        }
+//    }
+//    im.writePPM("dct4c.ppm")
+
 }
 
