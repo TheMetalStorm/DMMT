@@ -53,23 +53,21 @@ class DCT{
             return result
         }
 
-        fun directDCT(data: Channel): Channel{
+        fun directDCT(data: Channel){
             check(data)
             val N = data.width
-            var result = Channel(N, N)
 
             for (i in 0..N step tileSize) {
                 for (j in 0..N step tileSize) {
                     val tileChannel = Channel(8,8, Array(tileSize) { row -> Array(tileSize) { col -> data.getValue(j + col,i + row)  } })
                     val dctTile = directDCT8x8(tileChannel)
-                    for (row in 0..tileSize) {
-                        for (col in 0..tileSize) {
-                            result.setValue(j + col, i + row, dctTile.getValue(col,row))
+                    for (row in 0..<tileSize) {
+                        for (col in 0..<tileSize) {
+                            data.setValue(j + col, i + row, dctTile.getValue(col,row))
                         }
                     }
                 }
             }
-            return result
         }
         private fun directDCT8x8(data: Channel): Channel {
             val N = 8
