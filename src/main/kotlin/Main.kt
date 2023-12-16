@@ -1,11 +1,5 @@
-import JPGSegments.APP0
-import JPGSegments.DHT
-import JPGSegments.SOF0
-import datatypes.BitStream
 import datatypes.ImageRGB
 import DCT.DCT
-import datatypes.Channel
-import datatypes.RGB
 import kotlin.system.measureTimeMillis
 
 fun main() {
@@ -93,31 +87,56 @@ fun main() {
 //    bitstream.saveToFileAsBytes("test.jpeg")
 //    println()
 
-//    println()
-//    val image = ImageRGB.readPPM("src/main/kotlin/DCT/red.ppm", 16, 16)
-//    val redChannel = image.getChannel(0)
-//    println()
-//    DCT.directDCT(redChannel)
-//    redChannel.print()//    val toArray2 = DCT.seperateDCT(redChannel).toArray2()
-    //toArray2 is a Array<DoubleArray>, convert it to Array<Array<Double>>
-//    val dct = Channel(16,16, toArray2.map { it.toTypedArray() }.toTypedArray())
+    val image = ImageRGB.readPPM("src/main/kotlin/DCT/red.ppm", 16, 16)
+    val redChannel = image.getChannel(0)
 
-//    val idct = DCT.inverseDirectDCT(dct)
-//    println("orig")
-//    redChannel.print()
+
+//    val image = ImageRGB.readPPM("src/main/kotlin/DCT/dct4c.ppm", 8, 8)
+//    val redChannel = image.getChannel(0)
+    //directDCT Test
+//    var smallest = Long.MAX_VALUE
+//    var t = measureTimeMillis {
+//        for (i in 1..20) {
+//            val once = measureTimeMillis {
+//                val a = redChannel
+//                DCT.directDCT(a)
+//            }
+//            if(once < smallest) smallest = once
+//        }
 //
-//    println("idct")
-//    idct.print()
+//    }
+//    println("Time araiDCT: $t")
+//    println("Time araiDCT fastest iteration: $smallest")
+
+    //seperateDCT Test
+//    var smallest = Long.MAX_VALUE
+//    var t = measureTimeMillis {
+//            for (i in 1..20) {
+//                val once = measureTimeMillis {
+//                val a = redChannel
+//                DCT.seperateDCT(a)
+//                }
+//                if(once < smallest) smallest = once
+//            }
 //
-//    val channel = Channel(8,8, Array(8){ Array(8){ kotlin.random.Random.nextDouble()*255 } })
-//    println("random channel")
-//    channel.print()
-//    val dctarai = DCT.araiDct2D(channel)
-//    println("arai orig")
-//    dctarai.print()
-//    println("arai idct")
-//    val inverseDirectDCT = DCT.inverseDirectDCT(dctarai)
-//    idct.print()
+//    }
+//    println("Time seperateDCT: $t")
+//    println("Time seperateDCT fastest iteration: $smallest")
+
+//    //araiDCT Test
+//    var smallest = Long.MAX_VALUE
+//    var t = measureTimeMillis {
+//        for (i in 1..20) {
+//            val once = measureTimeMillis {
+//                val a = redChannel
+//                DCT.araiDct2D(a)
+//            }
+//            if(once < smallest) smallest = once
+//        }
+//    }
+//    println("Time araiDCT: $t")
+//    println("Time araiDCT fastest iteration: $smallest")
+
 
 //    val im = ImageRGB.empty(3840, 2160, 8, 8)
 //    for (y in 0..im.h) {

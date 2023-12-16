@@ -34,19 +34,11 @@ Y = repmat(1:cols, rows, 1);
 
 % Calculate the value for each element
 matrix = mod(X + Y * 8, 256);
+f = @() dct2(matrix);
 
 
 
-
-
-
-f = @() mdct(matrix);
+function mydct = mdct(matrix)
+end
 timeit(f)
 
-function a = mdct(matrix)
-    I = im2double(matrix);
-    I = I-128;
-    T = dctmtx(8);
-    dct = @(block_struct) T * block_struct.data * T';
-    a = blockproc(I,[8 8],dct); 
-end

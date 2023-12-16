@@ -305,10 +305,10 @@ class DCT{
         private fun check(data: Channel) {
             val width = data.width
             val height = data.height
-            if(width != height) {
-                throw Exception("Error: DCT expects width and height to be the same, w: ${width} h: ${height}")
-            }
             if(width % 8 != 0){
+                throw Exception("Error: DCT expects width/height to be divisible by 8, w: ${width} h: ${height}")
+            }
+            if(height % 8 != 0){
                 throw Exception("Error: DCT expects width/height to be divisible by 8, w: ${width} h: ${height}")
             }
         }
