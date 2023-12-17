@@ -279,16 +279,17 @@ class DCT{
 
         //TODO: we get weird values when result should be 0, otherwise the results seem fine?
         fun araiDct2D(data: Channel): Channel{
-            val matrix: Array<Array<Double>> = Array(8){ Array(8){ 0.0}}
+            var matrix: Array<Array<Double>> = Array(8){ Array(8){ 0.0}}
+            var dataCopy = Channel(8,8)
             for (y in 0 .. 7) {
                 for (x in 0..7) {
-                    data.setValue(x, y, data.getValue(x, y) - 128)
+                    dataCopy.setValue(x, y, data.getValue(x, y) - 128)
                 }
             }
             for (y in 0 .. 7) {
-                matrix[y] = araiDct1D(data.data[y])
+                matrix[y] = araiDct1D(dataCopy.data[y])
             }
-            val transposed: Array<Array<Double>> = Array(8){ Array(8){ 0.0}}
+            var transposed: Array<Array<Double>> = Array(8){ Array(8){ 0.0}}
             for (y in 0 .. 7) {
                 for (x in 0 .. 7) {
                     transposed[x][y] = matrix[y][x]
