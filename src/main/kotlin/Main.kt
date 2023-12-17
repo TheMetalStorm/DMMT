@@ -90,12 +90,16 @@ fun main() {
     val image = ImageRGB.readPPM("src/main/kotlin/DCT/red.ppm", 8, 8)
     val redChannel = image.getChannel(0)
 
-    val dct = DCT.araiDct2D(redChannel)
+
+    val dct = DCT.seperateDCT(redChannel)
     dct.print()
-//
-//    println()
-//    var dct = DCT.araiDct2D(redChannel)
-//    dct.print()
+    println()
+
+
+    var dct2 = DCT.araiDct2D(redChannel)
+    redChannel.print()
+    println()
+
 
 
 

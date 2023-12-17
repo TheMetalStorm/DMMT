@@ -13,7 +13,8 @@ class DCT{
         const val tileSize = 8
         private fun seperateDCT8x8(input: SimpleMatrix): SimpleMatrix {
 
-            val X = input.minus(128.0)
+            var X = input
+            X = X.minus(128.0)
             val N = 8
             val A: SimpleMatrix = SimpleMatrix(N,N)
             for (k in 0..<N ) {
