@@ -2,30 +2,33 @@ package DCT
 
 import datatypes.Channel
 import org.ejml.simple.SimpleMatrix
-import java.lang.Exception
 import kotlin.math.cos
-import kotlin.math.sqrt
+import kotlinx.coroutines.*
 
 
-class DCT{
+
+class DCT {
     companion object {
 
         const val tileSize = 8
+        const val sqrt2 = 1.41421356237
+
         private fun seperateDCT8x8(input: SimpleMatrix): SimpleMatrix {
 
             var X = input
             X = X.minus(128.0)
             val N = 8
-            val A: SimpleMatrix = SimpleMatrix(N,N)
-            for (k in 0..<N ) {
-                for (n in 0..<N ) {
+            val A: SimpleMatrix = SimpleMatrix(N, N)
+
+            for (k in 0..<N) {
+                for (n in 0..<N) {
                     val C0 =
-                        if (k == 0) (1.0/ sqrt(2.0))
+                        if (k == 0) (1.0 / sqrt2)
                         else 1.0
 
-                    val cosine: Double = cos(((2.0*n)+1.0) * ((k*Math.PI)/(2.0*N)))
-                    val newValue: Double= C0 * sqrt(2.0/N) * cosine
-                    A[k,n] = newValue
+                    val cosine: Double = cos(((2.0 * n) + 1.0) * ((k * Math.PI) / (2.0 * N)))
+                    val newValue: Double = C0 * 0.5 * cosine
+                    A[k, n] = newValue
                 }
             }
 
@@ -33,20 +36,29 @@ class DCT{
         }
 
 
-        fun seperateDCT(data: Channel) : SimpleMatrix{
+        fun seperateDCT(data: Channel): SimpleMatrix {
             check(data)
 
-            val N = data.width
-            val result = SimpleMatrix(N, N)
-            for (i in 0..<N step tileSize) {
-                for (j in 0..<N step tileSize) {
+            val NW = data.width
+            val NH = data.height
+            val result = SimpleMatrix(NH, NW)
+            runBlocking {
 
-                    val tileChannel = Channel(8,8, Array(tileSize) { row -> Array(tileSize) { col -> data.getValue(j + col,i + row)  } })
-                    val tcMatrix = tileChannel.toSimpleMatrix()
-                    val dctTile = seperateDCT8x8(tcMatrix)
-                    for (row in 0..<tileSize) {
-                        for (col in 0..<tileSize) {
-                            result[row + i, col + j] = dctTile[row, col]
+                for (i in 0..<NH step tileSize) {
+                    for (j in 0..<NW step tileSize) {
+                        launch(Dispatchers.Default) {
+
+                            val tileChannel = Channel(
+                                8,
+                                8,
+                                Array(tileSize) { row -> Array(tileSize) { col -> data.getValue(j + col, i + row) } })
+                            val tcMatrix = tileChannel.toSimpleMatrix()
+                            val dctTile = seperateDCT8x8(tcMatrix)
+                            for (row in 0..<tileSize) {
+                                for (col in 0..<tileSize) {
+                                    result[row + i, col + j] = dctTile[row, col]
+                                }
+                            }
                         }
                     }
                 }
@@ -54,50 +66,59 @@ class DCT{
             return result
         }
 
-        fun directDCT(data: Channel){
+        fun directDCT(data: Channel) {
             check(data)
-            val N = data.width
+            val NW = data.width
+            val NH = data.height
 
-            for (i in 0..<N step tileSize) {
-                for (j in 0..<N step tileSize) {
-                    val tileChannel = Channel(8,8, Array(tileSize) { row -> Array(tileSize) { col -> data.getValue(j + col,i + row)  } })
-                    val dctTile = directDCT8x8(tileChannel)
-                    for (row in 0..<tileSize) {
-                        for (col in 0..<tileSize) {
-                            data.setValue(j + col, i + row, dctTile.getValue(col,row))
+            runBlocking {
+                for (i in 0..<NH step tileSize) {
+                    for (j in 0..<NW step tileSize) {
+                        launch(Dispatchers.Default) {
+                            val tileChannel = Channel(
+                                8,
+                                8,
+                                Array(tileSize) { row -> Array(tileSize) { col -> data.getValue(j + col, i + row) } })
+                            val dctTile = directDCT8x8(tileChannel)
+                            for (row in 0..<tileSize) {
+                                for (col in 0..<tileSize) {
+                                    data.setValue(j + col, i + row, dctTile.getValue(col, row))
+                                }
+                            }
                         }
                     }
                 }
             }
         }
+
         private fun directDCT8x8(data: Channel): Channel {
             val N = 8
-            val sqrt2 = 1.41421356237
             val result = Channel(N, N)
-            for (i in 0..<N ) {
-                for (j in 0..<N ) {
+            for (i in 0..<N) {
+                for (j in 0..<N) {
                     val CI: Double =
-                        if (i == 0) (1.0/ sqrt2)
+                        if (i == 0) (1.0 / sqrt2)
                         else 1.0
                     val CJ: Double =
-                        if (j == 0) (1.0/ sqrt2)
+                        if (j == 0) (1.0 / sqrt2)
                         else 1.0
                     val sum = calculateDirectDCTValue(data, i, j)
-                    val newValue= 0.25 * CI * CJ * sum
+                    val newValue = 0.25 * CI * CJ * sum
                     result.setValue(i, j, newValue)
                 }
             }
 
             return result;
         }
+
         private fun calculateDirectDCTValue(data: Channel, i: Int, j: Int): Double {
             var result = 0.0
             for (x in 0..<tileSize) {
                 for (y in 0..<tileSize) {
 
                     val X = data.getValue(x, y) - 128.0
-                    val firstCos: Double  = cos( ((2.0*x.toDouble()+1.0) * i.toDouble() * Math.PI) /16.0)
-                    val secondCos: Double  = cos( ((2.0*y.toDouble()+1.0) * j.toDouble() * Math.PI) /16.0)
+                    val firstCos: Double = cos(((2.0 * x.toDouble() + 1.0) * i.toDouble() * Math.PI) / 16.0)
+                    val secondCos: Double = cos(((2.0 * y.toDouble() + 1.0) * j.toDouble() * Math.PI) / 16.0)
 
                     val curResult: Double = X * firstCos * secondCos
 
@@ -109,18 +130,21 @@ class DCT{
         }
 
 
-        fun inverseDirectDCT(data: Channel): Channel{
+        fun inverseDirectDCT(data: Channel): Channel {
             check(data)
             val N = data.width
             val result = Channel(N, N)
 
             for (i in 0..<N step tileSize) {
                 for (j in 0..<N step tileSize) {
-                    val tileChannel = Channel(8,8, Array(tileSize) { row -> Array(tileSize) { col -> data.getValue(j + col,i + row)  } })
+                    val tileChannel = Channel(
+                        8,
+                        8,
+                        Array(tileSize) { row -> Array(tileSize) { col -> data.getValue(j + col, i + row) } })
                     val idctTile = inverseDirectDCT8x8(tileChannel)
                     for (row in 0..<tileSize) {
                         for (col in 0..<tileSize) {
-                            result.setValue(j + col, i + row, idctTile.getValue(col,row))
+                            result.setValue(j + col, i + row, idctTile.getValue(col, row))
                         }
                     }
                 }
@@ -136,29 +160,30 @@ class DCT{
             check(data)
             val N = data.width
             val result = Channel(N, N)
-            for (x in 0..<N ) {
-                for (y in 0..<N ) {
+            for (x in 0..<N) {
+                for (y in 0..<N) {
                     val sum = calculateInverseDirectDCTValue(data, x, y, N)
                     result.setValue(x, y, sum + 128.0)
                 }
             }
             return result;
         }
+
         private fun calculateInverseDirectDCTValue(data: Channel, x: Int, y: Int, N: Int): Double {
             var result = 0.0
             for (i in 0..<N) {
                 for (j in 0..<N) {
                     val CI =
-                        if (i == 0) (1.0/ sqrt(2.0))
+                        if (i == 0) (1.0 / sqrt2)
                         else 1.0
                     val CJ =
-                        if (j == 0) (1.0/ sqrt(2.0))
+                        if (j == 0) (1.0 / sqrt2)
                         else 1.0
                     val Y = data.getValue(i, j)
-                    val firstCos = cos(((2.0*x+1.0)*i*Math.PI)/(2.0*N))
-                    val secondCos = cos( (((2.0*y)+1.0) * j * Math.PI)/(2.0*N))
+                    val firstCos = cos(((2.0 * x + 1.0) * i * Math.PI) / (2.0 * N))
+                    val secondCos = cos((((2.0 * y) + 1.0) * j * Math.PI) / (2.0 * N))
 
-                    val curResult = (2.0/N)*CI*CJ*Y * firstCos * secondCos
+                    val curResult = (2.0 / N) * CI * CJ * Y * firstCos * secondCos
 
                     result += curResult
 
@@ -167,11 +192,11 @@ class DCT{
             return result
         }
 
-        fun araiDct1D(data: Array<Double>): Array<Double>{
-            val result: Array<Double> = Array(8){0.0}
+        private fun araiDct1D(data: SimpleMatrix): SimpleMatrix {
+            val result: DoubleArray = DoubleArray(8, { 0.0 })
             val dataMatrix = SimpleMatrix(8, 8)
-            for(i in 0..<8){
-                dataMatrix[i,0] = data[i]
+            for (i in 0..<8) {
+                dataMatrix[i, 0] = data[i]
             }
             for (i in 0..<7) {
                 when (i) {
@@ -185,6 +210,7 @@ class DCT{
                         dataMatrix[6, i + 1] = dataMatrix.get(1, i) - dataMatrix.get(6, i)
                         dataMatrix[7, i + 1] = dataMatrix.get(0, i) - dataMatrix.get(7, i)
                     }
+
                     1 -> {
                         dataMatrix[0, i + 1] = dataMatrix.get(0, i) + dataMatrix.get(3, i)
                         dataMatrix[1, i + 1] = dataMatrix.get(1, i) + dataMatrix.get(2, i)
@@ -195,6 +221,7 @@ class DCT{
                         dataMatrix[6, i + 1] = dataMatrix.get(6, i) + dataMatrix.get(7, i)
                         dataMatrix[7, i + 1] = dataMatrix.get(7, i)
                     }
+
                     2 -> {
                         dataMatrix[0, i + 1] = dataMatrix.get(0, i) + dataMatrix.get(1, i)
                         dataMatrix[1, i + 1] = dataMatrix.get(0, i) - dataMatrix.get(1, i)
@@ -206,6 +233,7 @@ class DCT{
                         dataMatrix[7, i + 1] = dataMatrix.get(7, i)
 
                     }
+
                     3 -> {
                         val a1 = cos(4 * Math.PI / 16)
                         val a2 = cos(2 * Math.PI / 16) - cos(6 * Math.PI / 16)
@@ -224,6 +252,7 @@ class DCT{
                             (dataMatrix.get(6, i) * a4) - ((dataMatrix.get(4, i) + dataMatrix.get(6, i)) * a5)
                         dataMatrix[7, i + 1] = dataMatrix.get(7, i)
                     }
+
                     4 -> {
                         dataMatrix[0, i + 1] = dataMatrix.get(0, i)
                         dataMatrix[1, i + 1] = dataMatrix.get(1, i)
@@ -234,6 +263,7 @@ class DCT{
                         dataMatrix[6, i + 1] = dataMatrix.get(6, i)
                         dataMatrix[7, i + 1] = dataMatrix.get(7, i) - dataMatrix.get(5, i)
                     }
+
                     5 -> {
                         dataMatrix[0, i + 1] = dataMatrix.get(0, i)
                         dataMatrix[1, i + 1] = dataMatrix.get(1, i)
@@ -244,8 +274,9 @@ class DCT{
                         dataMatrix[6, i + 1] = dataMatrix.get(5, i) - dataMatrix.get(6, i)
                         dataMatrix[7, i + 1] = dataMatrix.get(7, i) - dataMatrix.get(4, i)
                     }
+
                     6 -> {
-                        val s0 = 1 / (2 * sqrt(2.0))
+                        val s0 = 1 / (2 * sqrt2)
                         val s1 = 1 / (4 * cos(1 * Math.PI / 16))
                         val s2 = 1 / (4 * cos(2 * Math.PI / 16))
                         val s3 = 1 / (4 * cos(3 * Math.PI / 16))
@@ -274,45 +305,61 @@ class DCT{
                     }
                 }
             }
+            val a = SimpleMatrix(1, 8, false, *result)
+            return a
+        }
+
+        fun araiDCT(data: Channel): SimpleMatrix {
+            check(data)
+            val dataSM = data.toSimpleMatrix()
+
+            val NW = data.width
+            val NH = data.height
+
+            val result = SimpleMatrix(NH, NW)
+            runBlocking {
+                for (i in 0..<NH step tileSize) {
+                    for (j in 0..<NW step tileSize) {
+                        launch(Dispatchers.Default) {
+
+                            val tileChannel = dataSM.extractMatrix(i, i + tileSize, j, j + tileSize)
+                            val dctTile = araiDct2D8x8(tileChannel)
+                            result.insertIntoThis(i, j, dctTile)
+                        }
+                    }
+                }
+            }
             return result
         }
 
         //TODO: we get weird values when result should be 0, otherwise the results seem fine?
-        fun araiDct2D(data: Channel): Channel{
-            var matrix: Array<Array<Double>> = Array(8){ Array(8){ 0.0}}
-            var dataCopy = Channel(8,8)
-            for (y in 0 .. 7) {
-                for (x in 0..7) {
-                    dataCopy.setValue(x, y, data.getValue(x, y) - 128)
-                }
+        fun araiDct2D8x8(data: SimpleMatrix): SimpleMatrix {
+            var dataCopy = data.copy().minus(128.0)
+
+            for (y in 0..7) {
+                val transformedRow = araiDct1D(dataCopy.extractVector(true, y))
+                dataCopy.insertIntoThis(y, 0, transformedRow)
             }
-            for (y in 0 .. 7) {
-                matrix[y] = araiDct1D(dataCopy.data[y])
+
+            dataCopy = dataCopy.transpose()
+
+            for (y in 0..7) {
+                val transformedRow = araiDct1D(dataCopy.extractVector(true, y))
+                dataCopy.insertIntoThis(y, 0, transformedRow)
             }
-            var transposed: Array<Array<Double>> = Array(8){ Array(8){ 0.0}}
-            for (y in 0 .. 7) {
-                for (x in 0 .. 7) {
-                    transposed[x][y] = matrix[y][x]
-                }
-            }
-            for (y in 0 .. 7) {
-                transposed[y] = araiDct1D(transposed[y])
-            }
-            for (y in 0 .. 7) {
-                for (x in 0 .. 7) {
-                    matrix[x][y] = transposed[y][x]
-                }
-            }
-            return Channel(8,8, matrix)
+
+            dataCopy = dataCopy.transpose()
+
+            return dataCopy
         }
 
         private fun check(data: Channel) {
             val width = data.width
             val height = data.height
-            if(width % 8 != 0){
+            if (width % 8 != 0) {
                 throw Exception("Error: DCT expects width/height to be divisible by 8, w: ${width} h: ${height}")
             }
-            if(height % 8 != 0){
+            if (height % 8 != 0) {
                 throw Exception("Error: DCT expects width/height to be divisible by 8, w: ${width} h: ${height}")
             }
         }

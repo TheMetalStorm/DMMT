@@ -2,7 +2,7 @@ import datatypes.ImageRGB
 import DCT.DCT
 import kotlin.system.measureTimeMillis
 
-fun main() {
+fun main(args: Array<String>) {
 //    val image = ImageRGB.readPPM("src/main/image.ppm", 8, 8)
 //    val yCbCrImage = image.toYCbCr()
 //    val subsampleCbCr = yCbCrImage.subsample(4, 4, 4)
@@ -87,69 +87,87 @@ fun main() {
 //    bitstream.saveToFileAsBytes("test.jpeg")
 //    println()
 
-    val image = ImageRGB.readPPM("src/main/kotlin/DCT/red.ppm", 8, 8)
+
+//
+//    var dct2 = DCT.araiDct2D8x8(redChannel)
+//    dct2.print()
+//    println()
+//
+
+
+
+
+
+//
+//    val image = ImageRGB.readPPM("src/main/kotlin/DCT/red.ppm", 8, 8)
+//    val redChannel = image.getChannel(0)
+//
+//    val dct = DCT.seperateDCT(redChannel)
+//    dct.print()
+//    println()
+
+    println("Reading Image Data (3840 x 2160)...")
+    println()
+
+    val imageSrc:String = if (args.isEmpty())  "./dct4c.ppm"
+                else args[0]
+    val image = ImageRGB.readPPM(imageSrc, 8, 8)
     val redChannel = image.getChannel(0)
 
-    var dct2 = DCT.araiDct2D(redChannel)
-    redChannel.print()
-    println()
-
-    val dct = DCT.seperateDCT(redChannel)
-    redChannel.print()
-    println()
-
-
-
-
-
-
-
-//    val image = ImageRGB.readPPM("src/main/kotlin/DCT/dct4c.ppm", 8, 8)
-//    val redChannel = image.getChannel(0)
 //    //directDCT Test
-//    var smallest = Long.MAX_VALUE
-//    var t = measureTimeMillis {
-//        for (i in 1..1) {
-//            val once = measureTimeMillis {
-//                val a = redChannel
-//                DCT.directDCT(a)
-//            }
-//            if(once < smallest) smallest = once
-//        }
-//
-//    }
-//    println("Time directDCT: $t")
-//    println("Time directDCT fastest iteration: $smallest")
+    println("Running direct DCT...")
+    val directIterations = 5
+    var smallest = Long.MAX_VALUE
+    val t1 = measureTimeMillis {
+        for (i in 1..directIterations) {
+            val once = measureTimeMillis {
+                val a = redChannel
+                DCT.directDCT(a)
+            }
+            if(once < smallest) smallest = once
+        }
+
+    }
+    println("Time directDCT x ${directIterations}: $t1 ms")
+    println("Time directDCT fastest iteration: $smallest ms")
+    println()
+
+    println("Running seperate DCT...")
 
     //seperateDCT Test
-//    var smallest = Long.MAX_VALUE
-//    var t = measureTimeMillis {
-//            for (i in 1..20) {
-//                val once = measureTimeMillis {
-//                val a = redChannel
-//                DCT.seperateDCT(a)
-//                }
-//                if(once < smallest) smallest = once
-//            }
-//
-//    }
-//    println("Time seperateDCT: $t")
-//    println("Time seperateDCT fastest iteration: $smallest")
+    val seperateIterations = 40
+    smallest = Long.MAX_VALUE
+    val t2 = measureTimeMillis {
+            for (i in 1..seperateIterations) {
+                val once = measureTimeMillis {
+                val a = redChannel
+                DCT.seperateDCT(a)
+                }
+                if(once < smallest) smallest = once
+            }
+    }
+    println("Time seperateDCT x ${seperateIterations}: $t2 ms")
+    println("Time seperateDCT fastest iteration: $smallest ms")
+    println()
 
-//    //araiDCT Test
-//    var smallest = Long.MAX_VALUE
-//    var t = measureTimeMillis {
-//        for (i in 1..20) {
-//            val once = measureTimeMillis {
-//                val a = redChannel
-//                DCT.araiDct2D(a)
-//            }
-//            if(once < smallest) smallest = once
-//        }
-//    }
-//    println("Time araiDCT: $t")
-//    println("Time araiDCT fastest iteration: $smallest")
+    println("Running arai DCT...")
+    val araiIterations = 25
+    smallest = Long.MAX_VALUE
+    val t3 = measureTimeMillis {
+        for (i in 1..araiIterations) {
+            val once = measureTimeMillis {
+                val a = redChannel
+                DCT.araiDCT(a)
 
+            }
+            if(once < smallest) smallest = once
+        }
+    }
+    println("Time araiDCT x ${araiIterations}: $t3 ms")
+    println("Time araiDCT fastest iteration: $smallest ms")
+    println()
+
+    println("Done!")
 
 //    val im = ImageRGB.empty(3840, 2160, 8, 8)
 //    for (y in 0..im.h) {
