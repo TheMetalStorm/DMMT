@@ -87,20 +87,24 @@ fun main() {
 //    bitstream.saveToFileAsBytes("test.jpeg")
 //    println()
 
-    val image = ImageRGB.readPPM("src/main/kotlin/DCT/red.ppm", 16, 16)
+    val image = ImageRGB.readPPM("src/main/kotlin/DCT/red.ppm", 8, 8)
     val redChannel = image.getChannel(0)
-
 
     val dct = DCT.araiDct2D(redChannel)
     dct.print()
+//
+//    println()
+//    var dct = DCT.araiDct2D(redChannel)
+//    dct.print()
+
 
 
 //    val image = ImageRGB.readPPM("src/main/kotlin/DCT/dct4c.ppm", 8, 8)
 //    val redChannel = image.getChannel(0)
-    //directDCT Test
+//    //directDCT Test
 //    var smallest = Long.MAX_VALUE
 //    var t = measureTimeMillis {
-//        for (i in 1..20) {
+//        for (i in 1..1) {
 //            val once = measureTimeMillis {
 //                val a = redChannel
 //                DCT.directDCT(a)
@@ -109,8 +113,8 @@ fun main() {
 //        }
 //
 //    }
-//    println("Time araiDCT: $t")
-//    println("Time araiDCT fastest iteration: $smallest")
+//    println("Time directDCT: $t")
+//    println("Time directDCT fastest iteration: $smallest")
 
     //seperateDCT Test
 //    var smallest = Long.MAX_VALUE

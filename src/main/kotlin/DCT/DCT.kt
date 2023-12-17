@@ -10,12 +10,12 @@ import kotlin.math.sqrt
 class DCT{
     companion object {
 
-        val tileSize = 8
+        const val tileSize = 8
         private fun seperateDCT8x8(input: SimpleMatrix): SimpleMatrix {
 
             val X = input.minus(128.0)
             val N = 8
-            var A: SimpleMatrix = SimpleMatrix(N,N)
+            val A: SimpleMatrix = SimpleMatrix(N,N)
             for (k in 0..<N ) {
                 for (n in 0..<N ) {
                     val C0 =
@@ -57,8 +57,8 @@ class DCT{
             check(data)
             val N = data.width
 
-            for (i in 0..N step tileSize) {
-                for (j in 0..N step tileSize) {
+            for (i in 0..<N step tileSize) {
+                for (j in 0..<N step tileSize) {
                     val tileChannel = Channel(8,8, Array(tileSize) { row -> Array(tileSize) { col -> data.getValue(j + col,i + row)  } })
                     val dctTile = directDCT8x8(tileChannel)
                     for (row in 0..<tileSize) {
@@ -71,16 +71,17 @@ class DCT{
         }
         private fun directDCT8x8(data: Channel): Channel {
             val N = 8
-            var result = Channel(N, N)
-            for (i in 0..N ) {
-                for (j in 0..N ) {
+            val sqrt2 = 1.41421356237
+            val result = Channel(N, N)
+            for (i in 0..<N ) {
+                for (j in 0..<N ) {
                     val CI: Double =
-                        if (i == 0) (1.0/ sqrt(2.0))
+                        if (i == 0) (1.0/ sqrt2)
                         else 1.0
                     val CJ: Double =
-                        if (j == 0) (1.0/ sqrt(2.0))
+                        if (j == 0) (1.0/ sqrt2)
                         else 1.0
-                    val sum = calculateDirectDCTValue(data, i, j, N)
+                    val sum = calculateDirectDCTValue(data, i, j)
                     val newValue= 0.25 * CI * CJ * sum
                     result.setValue(i, j, newValue)
                 }
@@ -88,10 +89,10 @@ class DCT{
 
             return result;
         }
-        private fun calculateDirectDCTValue(data: Channel, i: Int, j: Int, N: Int): Double {
+        private fun calculateDirectDCTValue(data: Channel, i: Int, j: Int): Double {
             var result = 0.0
-            for (x in 0..<N) {
-                for (y in 0..<N) {
+            for (x in 0..<tileSize) {
+                for (y in 0..<tileSize) {
 
                     val X = data.getValue(x, y) - 128.0
                     val firstCos: Double  = cos( ((2.0*x.toDouble()+1.0) * i.toDouble() * Math.PI) /16.0)
@@ -110,7 +111,7 @@ class DCT{
         fun inverseDirectDCT(data: Channel): Channel{
             check(data)
             val N = data.width
-            var result = Channel(N, N)
+            val result = Channel(N, N)
 
             for (i in 0..<N step tileSize) {
                 for (j in 0..<N step tileSize) {
@@ -133,7 +134,7 @@ class DCT{
         fun inverseDirectDCT8x8(data: Channel): Channel {
             check(data)
             val N = data.width
-            var result = Channel(N, N)
+            val result = Channel(N, N)
             for (x in 0..<N ) {
                 for (y in 0..<N ) {
                     val sum = calculateInverseDirectDCTValue(data, x, y, N)
@@ -166,8 +167,8 @@ class DCT{
         }
 
         fun araiDct1D(data: Array<Double>): Array<Double>{
-            var result: Array<Double> = Array(8){0.0}
-            var dataMatrix = SimpleMatrix(8, 8)
+            val result: Array<Double> = Array(8){0.0}
+            val dataMatrix = SimpleMatrix(8, 8)
             for(i in 0..<8){
                 dataMatrix[i,0] = data[i]
             }
@@ -277,7 +278,7 @@ class DCT{
 
         //TODO: we get weird values when result should be 0, otherwise the results seem fine?
         fun araiDct2D(data: Channel): Channel{
-            var matrix: Array<Array<Double>> = Array(8){ Array(8){ 0.0}}
+            val matrix: Array<Array<Double>> = Array(8){ Array(8){ 0.0}}
             for (y in 0 .. 7) {
                 for (x in 0..7) {
                     data.setValue(x, y, data.getValue(x, y) - 128)
@@ -286,7 +287,7 @@ class DCT{
             for (y in 0 .. 7) {
                 matrix[y] = araiDct1D(data.data[y])
             }
-            var transposed: Array<Array<Double>> = Array(8){ Array(8){ 0.0}}
+            val transposed: Array<Array<Double>> = Array(8){ Array(8){ 0.0}}
             for (y in 0 .. 7) {
                 for (x in 0 .. 7) {
                     transposed[x][y] = matrix[y][x]
