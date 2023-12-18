@@ -193,7 +193,7 @@ class DCT {
             return result
         }
 
-        fun araiDct1D(data: Array<Array<Double>>): Array<Array<Double>> {
+        fun araiDct8x8(data: SimpleMatrix): SimpleMatrix{
 
             val a1 = cos(4 * Math.PI / 16)
             val a2 = cos(2 * Math.PI / 16) - cos(6 * Math.PI / 16)
@@ -211,83 +211,83 @@ class DCT {
 
             for(i in 0.. 7)
             {
-                val b0 = data[0 ][ i] + data[7 ][i];
-                val b1 = data[1 ][ i] + data[6 ][i];
-                val b2 = data[2 ][ i] + data[5 ][i];
-                val b3 = data[3 ][ i] + data[4 ][i];
-                val b4 = data[3 ][ i] - data[4 ][i];
-                val b5 = -data[5 ][ i] + data[2 ][ i];
-                val b6 = -data[6 ][ i] + data[1 ][ i];
-                val b7 = -data[7 ][ i] + data[0 ][ i];
+                val b0 = data.get(0, i) + data.get(7, i)
+                val b1 = data.get(1 , i) + data.get(6 ,i)
+                val b2 = data.get(2 , i) + data.get(5, i)
+                val b3 = data.get(3 , i) + data.get(4, i)
+                val b4 = data.get(3 , i) - data.get(4, i)
+                val b5 = -data.get(5, i) + data.get(2, i)
+                val b6 = -data.get(6, i) + data.get(1, i)
+                val b7 = -data.get(7, i) + data.get(0, i)
 
-                val c0 = b0 + b3;
-                val c1 = b1 + b2;
-                val c2 = -b2 + b1;
-                val c3 = -b3 + b0;
-                val c4 = -b4 - b5;
-                val c5 = b5 + b6;
-                val c6 = b6 + b7;
-                val c7 = b7;
+                val c0 = b0 + b3
+                val c1 = b1 + b2
+                val c2 = -b2 + b1
+                val c3 = -b3 + b0
+                val c4 = -b4 - b5
+                val c5 = b5 + b6
+                val c6 = b6 + b7
+                val c7 = b7
 
-                val d0 = c0 + c1;
-                val d1 = -c1 + c0;
-                val d2 = c2 + c3;
-                val d3 = c3;
-                val d4 = c4;
-                val d5 = c5;
-                val d6 = c6;
-                val d7 = c7;
-                val d8 = (d4 + d6) * a5;
+                val d0 = c0 + c1
+                val d1 = -c1 + c0
+                val d2 = c2 + c3
+                val d3 = c3
+                val d4 = c4
+                val d5 = c5
+                val d6 = c6
+                val d7 = c7
+                val d8 = (d4 + d6) * a5
 
-                val e0 = d0;
-                val e1 = d1;
-                val e2 = d2 * a1;
-                val e3 = d3;
-                val e4 = -d4 * a2 - d8;
-                val e5 = d5 * a3;
-                val e6 = d6 * a4 - d8;
-                val e7 = d7;
+                val e0 = d0
+                val e1 = d1
+                val e2 = d2 * a1
+                val e3 = d3
+                val e4 = -d4 * a2 - d8
+                val e5 = d5 * a3
+                val e6 = d6 * a4 - d8
+                val e7 = d7
 
-                val f0 = e0;
-                val f1 = e1;
-                val f2 = e2 + e3;
-                val f3 = e3 - e2;
-                val f4 = e4;
-                val f5 = e5 + e7;
-                val f6 = e6;
-                val f7 = e7 - e5;
+                val f0 = e0
+                val f1 = e1
+                val f2 = e2 + e3
+                val f3 = e3 - e2
+                val f4 = e4
+                val f5 = e5 + e7
+                val f6 = e6
+                val f7 = e7 - e5
 
-                val g0 = f0;
-                val g1 = f1;
-                val g2 = f2;
-                val g3 = f3;
-                val g4 = f4 + f7;
-                val g5 = f5 + f6;
-                val g6 = -f6 + f5;
-                val g7 = f7 - f4;
+                val g0 = f0
+                val g1 = f1
+                val g2 = f2
+                val g3 = f3
+                val g4 = f4 + f7
+                val g5 = f5 + f6
+                val g6 = -f6 + f5
+                val g7 = f7 - f4
 
-                data[0][ i] = g0 * s0;
-                data[4][ i] = g1 * s4;
-                data[2][ i] = g2 * s2;
-                data[6][ i] = g3 * s6;
-                data[5][ i] = g4 * s5;
-                data[1][ i] = g5 * s1;
-                data[7][ i] = g6 * s7;
-                data[3][ i] = g7 * s3;
+                data.set(0, i, g0 * s0)
+                data.set(4, i, g1 * s4)
+                data.set(2, i, g2 * s2)
+                data.set(6, i, g3 * s6)
+                data.set(5, i, g4 * s5)
+                data.set(1, i, g5 * s1)
+                data.set(7, i, g6 * s7)
+                data.set(3, i, g7 * s3)
 
 
         }
 
             for(i in 0.. 7)
             {
-                val b0 = data[i ][ 0]  + data[i ][ 7];
-                val b1 = data[i ][ 1]  + data[i ][ 6];
-                val b2 = data[i ][ 2]  + data[i ][ 5];
-                val b3 = data[i ][ 3]  + data[i ][ 4];
-                val b4 =-data[i ][ 4]  + data[i ][ 3];
-                val b5 =-data[i ][ 5]  + data[i ][ 2];
-                val b6 =-data[i ][ 6]  + data[i ][ 1];
-                val b7 =-data[i ][ 7]  + data[i ][ 0] ;
+                val b0 = data.get(i , 0)  + data.get(i , 7)
+                val b1 = data.get(i , 1)  + data.get(i , 6)
+                val b2 = data.get(i , 2)  + data.get(i , 5)
+                val b3 = data.get(i , 3)  + data.get(i , 4)
+                val b4 =-data.get(i , 4)  + data.get(i , 3)
+                val b5 =-data.get(i , 5)  + data.get(i , 2)
+                val b6 =-data.get(i , 6)  + data.get(i , 1)
+                val b7 =-data.get(i , 7)  + data.get(i , 0);
 
                 val c0 = b0 + b3;
                 val c1 = b1 + b2;
@@ -335,14 +335,14 @@ class DCT {
                 val g6 = -f6 + f5;
                 val g7 = f7 - f4;
 
-                data[i][0] = g0 * s0;
-                data[i][4] = g1 * s4;
-                data[i][2] = g2 * s2;
-                data[i][6] = g3 * s6;
-                data[i][5] = g4 * s5;
-                data[i][1] = g5 * s1;
-                data[i][7] = g6 * s7;
-                data[i][3] = g7 * s3;
+                data.set(i, 0, g0 * s0);
+                data.set(i, 4, g1 * s4);
+                data.set(i, 2, g2 * s2);
+                data.set(i, 6, g3 * s6);
+                data.set(i, 5, g4 * s5);
+                data.set(i, 1, g5 * s1);
+                data.set(i, 7, g6 * s7);
+                data.set(i, 3, g7 * s3);
 
 
             }
@@ -350,38 +350,31 @@ class DCT {
             return data
         }
 
-        //TODO: we get weird values when result should be 0, otherwise the results seem fine?
-        fun araiDct2D(data: Channel): Channel{
-            var dataCopy = Channel(8,8)
-            for (y in 0 .. 7) {
-                for (x in 0..7) {
-                    dataCopy.setValue(x, y, data.getValue(x, y) - 128)
+        fun araiDct2D(data: SimpleMatrix): SimpleMatrix{
+            val dataCopy = data.copy().minus(128.0)
+            return araiDct8x8(dataCopy)
+        }
+        fun araiDCT(data: Channel): SimpleMatrix {
+            check(data)
+            val dataSM = data.toSimpleMatrix()
+
+            val NW = data.width
+            val NH = data.height
+
+            val result = SimpleMatrix(NH, NW)
+            runBlocking {
+                for (i in 0..<NH step tileSize) {
+                    for (j in 0..<NW step tileSize) {
+                        launch(Dispatchers.Default) {
+                            val tileChannel = dataSM.extractMatrix(i, i + tileSize, j, j + tileSize)
+                            val dctTile = araiDct2D(tileChannel)
+                            result.insertIntoThis(i, j, dctTile)
+                        }
+                    }
                 }
             }
-            return Channel(8,8, araiDct1D(dataCopy.data))
+            return result
         }
-//        fun araiDCT(data: Channel): SimpleMatrix {
-//            check(data)
-//            val dataSM = data.toSimpleMatrix()
-//
-//            val NW = data.width
-//            val NH = data.height
-//
-//            val result = SimpleMatrix(NH, NW)
-//            runBlocking {
-//                for (i in 0..<NH step tileSize) {
-//                    for (j in 0..<NW step tileSize) {
-//                        launch(Dispatchers.Default) {
-//
-//                            val tileChannel = dataSM.extractMatrix(i, i + tileSize, j, j + tileSize)
-//                            val dctTile = araiDct2D8x8(tileChannel)
-//                            result.insertIntoThis(i, j, dctTile)
-//                        }
-//                    }
-//                }
-//            }
-//            return result
-//        }
 
         private fun check(data: Channel) {
             val width = data.width
