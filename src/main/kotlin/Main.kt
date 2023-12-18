@@ -117,54 +117,60 @@ fun main(args: Array<String>) {
 
 //    //directDCT Test
     println("Running direct DCT...")
-    val directIterations = 5
+    var directIterations = 0
     var smallest = Long.MAX_VALUE
-    val t1 = measureTimeMillis {
-        for (i in 1..directIterations) {
-            val once = measureTimeMillis {
-                val a = redChannel
-                DCT.directDCT(a)
-            }
-            if(once < smallest) smallest = once
+    var time: Long = 0
+    for (i in 1..10000) {
+        val once = measureTimeMillis {
+            val a = redChannel
+            DCT.directDCT(a)
         }
-
+        if(once < smallest) smallest = once
+        directIterations += 1
+        time += once
+        if (time > 10000) break
     }
-    println("Time directDCT x ${directIterations}: $t1 ms")
+
+    println("Time directDCT x ${directIterations}: $time ms")
     println("Time directDCT fastest iteration: $smallest ms")
     println()
 
     println("Running seperate DCT...")
 //
 //    //seperateDCT Test
-    val seperateIterations = 40
+    var seperateIterations = 0
     smallest = Long.MAX_VALUE
-    val t2 = measureTimeMillis {
-            for (i in 1..seperateIterations) {
-                val once = measureTimeMillis {
-                val a = redChannel
-                DCT.seperateDCT(a)
-                }
-                if(once < smallest) smallest = once
-            }
+    time = 0
+    for (i in 1..10000) {
+        val once = measureTimeMillis {
+            val a = redChannel
+            DCT.seperateDCT(a)
+        }
+        if(once < smallest) smallest = once
+        seperateIterations += 1
+        time += once
+        if (time > 10000) break
     }
-    println("Time seperateDCT x ${seperateIterations}: $t2 ms")
+
+    println("Time seperateDCT x ${seperateIterations}: $time ms")
     println("Time seperateDCT fastest iteration: $smallest ms")
     println()
 
     println("Running arai DCT...")
-    val araiIterations = 25
+    var araiIterations = 0
     smallest = Long.MAX_VALUE
-    val t3 = measureTimeMillis {
-        for (i in 1..araiIterations) {
-            val once = measureTimeMillis {
-                val a = redChannel
-                DCT.araiDCT(a)
-
-            }
-            if(once < smallest) smallest = once
+    time = 0
+    for (i in 1..10000) {
+        val once = measureTimeMillis {
+            val a = redChannel
+            DCT.araiDCT(a)
         }
+        if(once < smallest) smallest = once
+        araiIterations += 1
+        time += once
+        if (time > 10000) break
     }
-    println("Time araiDCT x ${araiIterations}: $t3 ms")
+    println("Time araiDCT x ${araiIterations}: $time ms")
     println("Time araiDCT fastest iteration: $smallest ms")
     println()
 
