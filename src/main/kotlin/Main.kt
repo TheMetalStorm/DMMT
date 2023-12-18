@@ -91,12 +91,19 @@ fun main() {
     val redChannel = image.getChannel(0)
 
     var dct2 = DCT.araiDct2D(redChannel)
-    redChannel.print()
+    println("arai")
+    dct2.print()
     println()
 
+
     val dct = DCT.seperateDCT(redChannel)
-    redChannel.print()
+    println("serperateDCT")
+    dct.print()
     println()
+
+//    val dct3 = DCT.directDCT(redChannel)
+//    println("directDCT")
+//    redChannel.print()
 
 
 
