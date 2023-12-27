@@ -13,6 +13,75 @@ class DCT {
         const val tileSize = 8
         const val sqrt2 = 1.41421356237
 
+        fun quantMatrix50(): SimpleMatrix {
+            val result = SimpleMatrix(tileSize, tileSize)
+            result.fill(50.0)
+            return result
+        }
+
+        fun luminanceQuantTable(): SimpleMatrix {
+            return SimpleMatrix( 8, 8, true,
+                16.0,	11.0,	10.0,	16.0,	24.0,	40.0,	51.0,	61.0,
+                12.0,	12.0,	14.0,	19.0,	26.0,	58.0,	60.0,	55.0,
+                14.0,	13.0,	16.0,	24.0,	40.0,	57.0,	69.0,	56.0,
+                14.0,	17.0,	22.0,	29.0,	51.0,	87.0,	80.0,	62.0,
+                18.0,	22.0,	37.0,	56.0,	68.0,	109.0,	103.0,	77.0,
+                24.0,	35.0,	55.0,	64.0,	81.0,	104.0,	113.0,	92.0,
+                49.0,	64.0,	78.0,	87.0,	103.0,	121.0,	120.0,	101.0,
+                72.0,	92.0,	95.0,	98.0,	112.0,	100.0,	103.0,	99.0,
+            )
+        }
+
+        fun chrominanceQuantTable(): SimpleMatrix {
+            return SimpleMatrix( 8, 8, true,
+                17.0,	18.0,	24.0,	47.0,	99.0,	99.0,	99.0,	99.0,
+                18.0,	21.0,	26.0,	66.0,	99.0,	99.0,	99.0,	99.0,
+                24.0,	26.0,	56.0,	99.0,	99.0,	99.0,	99.0,	99.0,
+                47.0,	66.0,	99.0,	99.0,	99.0,	99.0,	99.0,	99.0,
+                99.0,	99.0,	99.0,	99.0,	99.0,	99.0,	99.0,	99.0,
+                99.0,	99.0,	99.0,	99.0,	99.0,	99.0,	99.0,	99.0,
+                99.0,	99.0,	99.0,	99.0,	99.0,	99.0,	99.0,	99.0,
+                99.0,	99.0,	99.0,	99.0,	99.0,	99.0,	99.0,	99.0,
+            )
+        }
+        fun quantize(data: SimpleMatrix, quantizationMatrix: SimpleMatrix): SimpleMatrix{
+
+            val NW = data.numCols
+            val NH = data.numRows
+
+            val result = SimpleMatrix(NH, NW)
+
+            runBlocking {
+                for (i in 0..<NH step tileSize) {
+                    for (j in 0..<NW step tileSize) {
+                        launch(Dispatchers.Default) {
+                            val tileChannel = data.extractMatrix(i, i + tileSize, j, j + tileSize)
+                            val quantizedTile = quantize8x8(tileChannel, quantizationMatrix)
+                            for (row in 0..<tileSize) {
+                                for (col in 0..<tileSize) {
+                                    result.set(i + row, j + col,  quantizedTile.get(row, col))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return result
+        }
+
+        private fun quantize8x8(tileChannel: SimpleMatrix, quantizationMatrix: SimpleMatrix): SimpleMatrix {
+
+            val a  = tileChannel.elementDiv(quantizationMatrix)
+            //NOTE: disgusting and slow
+            val result = SimpleMatrix(tileSize, tileSize)
+            for (i in 0..<tileSize) {
+                for (j in 0..<tileSize) {
+                    result[i, j] = Math.round(a[i, j]).toDouble()
+                }
+            }
+            return result
+        }
+
         private fun seperateDCT8x8(input: SimpleMatrix): SimpleMatrix {
 
             var X = input

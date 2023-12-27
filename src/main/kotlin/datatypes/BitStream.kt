@@ -81,7 +81,7 @@ data class BitStream (private var values: ArrayList<UByte> = arrayListOf(), var 
     }
 
      fun  getLastByte(): UByte{
-        return values.last
+        return values.last()
     }
 
     fun getByte(index: Int): UByte{

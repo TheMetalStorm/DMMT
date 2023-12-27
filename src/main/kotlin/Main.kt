@@ -1,5 +1,6 @@
 import datatypes.ImageRGB
 import DCT.DCT
+import org.ejml.simple.SimpleMatrix
 import kotlin.system.measureTimeMillis
 
 fun main(args: Array<String>) {
@@ -107,74 +108,74 @@ fun main(args: Array<String>) {
 //    redChannel.print()
 //    dct.print()
 
-    println("Reading Image Data (3840 x 2160)...")
-    println()
-
-    val imageSrc:String = if (args.isEmpty())  "./dct4c.ppm"
-                else args[0]
-    val image = ImageRGB.readPPM(imageSrc, 8, 8)
-    val redChannel = image.getChannel(0)
-
-//    //directDCT Test
-    println("Running direct DCT...")
-    var directIterations = 0
-    var smallest = Long.MAX_VALUE
-    var time: Long = 0
-    for (i in 1..10000) {
-        val once = measureTimeMillis {
-            val a = redChannel
-            DCT.directDCT(a)
-        }
-        if(once < smallest) smallest = once
-        directIterations += 1
-        time += once
-        if (time > 10000) break
-    }
-
-    println("Time directDCT x ${directIterations}: $time ms")
-    println("Time directDCT fastest iteration: $smallest ms")
-    println()
-
-    println("Running seperate DCT...")
+//    println("Reading Image Data (3840 x 2160)...")
+//    println()
 //
-//    //seperateDCT Test
-    var seperateIterations = 0
-    smallest = Long.MAX_VALUE
-    time = 0
-    for (i in 1..10000) {
-        val once = measureTimeMillis {
-            val a = redChannel
-            DCT.seperateDCT(a)
-        }
-        if(once < smallest) smallest = once
-        seperateIterations += 1
-        time += once
-        if (time > 10000) break
-    }
-
-    println("Time seperateDCT x ${seperateIterations}: $time ms")
-    println("Time seperateDCT fastest iteration: $smallest ms")
-    println()
-
-    println("Running arai DCT...")
-    var araiIterations = 0
-    smallest = Long.MAX_VALUE
-    time = 0
-    for (i in 1..10000) {
-        val once = measureTimeMillis {
-            val a = redChannel
-            DCT.araiDCT(a)
-        }
-        if(once < smallest) smallest = once
-        araiIterations += 1
-        time += once
-        if (time > 10000) break
-    }
-    println("Time araiDCT x ${araiIterations}: $time ms")
-    println("Time araiDCT fastest iteration: $smallest ms")
-    println()
-
-    println("Done!")
+//    val imageSrc:String = if (args.isEmpty())  "./dct4c.ppm"
+//                else args[0]
+//    val image = ImageRGB.readPPM(imageSrc, 8, 8)
+//    val redChannel = image.getChannel(0)
+//
+////    //directDCT Test
+//    println("Running direct DCT...")
+//    var directIterations = 0
+//    var smallest = Long.MAX_VALUE
+//    var time: Long = 0
+//    for (i in 1..10000) {
+//        val once = measureTimeMillis {
+//            val a = redChannel
+//            DCT.directDCT(a)
+//        }
+//        if(once < smallest) smallest = once
+//        directIterations += 1
+//        time += once
+//        if (time > 10000) break
+//    }
+//
+//    println("Time directDCT x ${directIterations}: $time ms")
+//    println("Time directDCT fastest iteration: $smallest ms")
+//    println()
+//
+//    println("Running seperate DCT...")
+////
+////    //seperateDCT Test
+//    var seperateIterations = 0
+//    smallest = Long.MAX_VALUE
+//    time = 0
+//    for (i in 1..10000) {
+//        val once = measureTimeMillis {
+//            val a = redChannel
+//            DCT.seperateDCT(a)
+//        }
+//        if(once < smallest) smallest = once
+//        seperateIterations += 1
+//        time += once
+//        if (time > 10000) break
+//    }
+//
+//    println("Time seperateDCT x ${seperateIterations}: $time ms")
+//    println("Time seperateDCT fastest iteration: $smallest ms")
+//    println()
+//
+//    println("Running arai DCT...")
+//    var araiIterations = 0
+//    smallest = Long.MAX_VALUE
+//    time = 0
+//    for (i in 1..10000) {
+//        val once = measureTimeMillis {
+//            val a = redChannel
+//            DCT.araiDCT(a)
+//        }
+//        if(once < smallest) smallest = once
+//        araiIterations += 1
+//        time += once
+//        if (time > 10000) break
+//    }
+//    println("Time araiDCT x ${araiIterations}: $time ms")
+//    println("Time araiDCT fastest iteration: $smallest ms")
+//    println()
+//
+//    println("Done!")
 
 //    val im = ImageRGB.empty(3840, 2160, 8, 8)
 //    for (y in 0..im.h) {
@@ -184,5 +185,17 @@ fun main(args: Array<String>) {
 //    }
 //    im.writePPM("dct4c.ppm")
 
+    val testMatrix = SimpleMatrix( 8, 8, true,
+        581.0, -144.0, 56.0, 17.0, 15.0, -7.0, 25.0, -9.0,
+        -242.0, 133.0, -48.0, 42.0, -2.0, -7.0, 13.0, -4.0,
+        108.0, -18.0, -40.0, 71.0, -33.0, 12.0, 6.0, -10.0,
+        -56.0, -93.0, 48.0, 19.0, -8.0, 7.0, 6.0, -2.0,
+        -17.0, 9.0, 7.0, -23.0, -3.0, -10.0, 5.0, 3.0,
+        4.0, 9.0, -4.0, -5.0, 2.0, 2.0, -7.0, 3.0,
+        -9.0, 7.0, 8.0, -6.0, 5.0, 12.0, 2.0, -5.0,
+        -9.0, -4.0, -2.0, -3.0, 6.0, 1.0, -1.0, -1.0,
+    )
+
+    DCT.quantize(testMatrix, DCT.quantMatrix50()).print()
 }
 

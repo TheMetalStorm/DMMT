@@ -1,6 +1,5 @@
 package datatypes
 
-import com.sun.source.tree.Tree
 
 
 data class TreeNode(val symbol: Int, val frequency: Int, var largestAmountOfStepsToLeaf: Int){
