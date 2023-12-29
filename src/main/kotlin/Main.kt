@@ -1,5 +1,10 @@
 import datatypes.ImageRGB
 import DCT.DCT
+import JPGSegments.APP0
+import JPGSegments.DHT
+import JPGSegments.DQT
+import JPGSegments.SOF0
+import datatypes.BitStream
 import org.ejml.simple.SimpleMatrix
 import kotlin.system.measureTimeMillis
 
@@ -185,17 +190,64 @@ fun main(args: Array<String>) {
 //    }
 //    im.writePPM("dct4c.ppm")
 
-    val testMatrix = SimpleMatrix( 8, 8, true,
-        581.0, -144.0, 56.0, 17.0, 15.0, -7.0, 25.0, -9.0,
-        -242.0, 133.0, -48.0, 42.0, -2.0, -7.0, 13.0, -4.0,
-        108.0, -18.0, -40.0, 71.0, -33.0, 12.0, 6.0, -10.0,
-        -56.0, -93.0, 48.0, 19.0, -8.0, 7.0, 6.0, -2.0,
-        -17.0, 9.0, 7.0, -23.0, -3.0, -10.0, 5.0, 3.0,
-        4.0, 9.0, -4.0, -5.0, 2.0, 2.0, -7.0, 3.0,
-        -9.0, 7.0, 8.0, -6.0, 5.0, 12.0, 2.0, -5.0,
-        -9.0, -4.0, -2.0, -3.0, 6.0, 1.0, -1.0, -1.0,
-    )
+//    val testMatrix = SimpleMatrix( 8, 8, true,
+//        581.0, -144.0, 56.0, 17.0, 15.0, -7.0, 25.0, -9.0,
+//        -242.0, 133.0, -48.0, 42.0, -2.0, -7.0, 13.0, -4.0,
+//        108.0, -18.0, -40.0, 71.0, -33.0, 12.0, 6.0, -10.0,
+//        -56.0, -93.0, 48.0, 19.0, -8.0, 7.0, 6.0, -2.0,
+//        -17.0, 9.0, 7.0, -23.0, -3.0, -10.0, 5.0, 3.0,
+//        4.0, 9.0, -4.0, -5.0, 2.0, 2.0, -7.0, 3.0,
+//        -9.0, 7.0, 8.0, -6.0, 5.0, 12.0, 2.0, -5.0,
+//        -9.0, -4.0, -2.0, -3.0, 6.0, 1.0, -1.0, -1.0,
+//    )
+//
+//    DCT.quantize(testMatrix, DCT.quantMatrix50()).print()
 
-    DCT.quantize(testMatrix, DCT.quantMatrix50()).print()
+
+    makeTestJPEG()
+}
+
+fun makeTestJPEG(){
+
+    val bitstream : BitStream = BitStream()
+
+    val app0 = APP0(1u, 1u, 0u, 0u, 0x48u, 0u, 0x48u)
+    val sof0 = SOF0(8u, 0u, 16u, 0u, 16u, 1u,
+        arrayListOf(0x01u, 0x22u, 0u))
+
+    val huffman = Huffman()
+
+    val originalMessage = "ufog5JxQIQSqsyFnC09yEjMFCMuyVaqGszj3lGWKVFOQvkS6c4WJvH1rGgfyCC1MCdwx5dmybnv985Llu3sx7YcGkmbFtXNGtGrwn6dp6mzdDgZW6DzMDqqfe8zkEyHurLMApvtMsi5nBGuuUuZSsvZeZ6HXomW6lZLF76SjZqh2Fv3mwqidWvwkUaxdlX4Jl0KuLD97ZLGjnwlRF1PfAGjMbhw6XkJlDbZbLke31cl0seJZqClUBIefuWuhND7QXAFJKnS9x12ouBNTEWbErsq4PH40wOg3aoUJ4U6vi2WmZ9x5medUwKxNe7nNIC0pzqAckSbQrlTZvAFZ3zsOrH2Ij1HkBfgCYueLiL1MaojChgA6amwnAnKZL7lTPlPZBFSlAUcprFOQmneUZ74u2UHpZz3Ld24qtOJZ3VuAHg1KHR7pt87ULupxYClydSTOFJNyUWZA2vveHk4NCAUSazIUTK0Mdxyi5D6jpz68V8XbJbu0rFCC"
+    val (encodedMessage, symbolToCodeMap) = huffman.encode(originalMessage.toCharArray().map { it.code }.toIntArray())
+    val dht = DHT(symbolToCodeMap, 0, 0)
+    val dht2 = DHT(symbolToCodeMap, 1, 1)
+    val quant50 = DCT.quantMatrix50()
+    val quant50List = quant50.toArray2().toList().flatMap { it.toList() }.map { it.toInt().toUByte() }
+    val dqt = DQT(ArrayList(quant50List), 0, 0)
+    val dqt2 = DQT(ArrayList(quant50List), 1, 0)
+
+    //SOI
+    bitstream.addByteToStream(arrayListOf(0xffu, 0xd8u))
+
+    //APP0
+    bitstream.addBitStream(app0.getBitStream());
+
+    //DQT
+    bitstream.addBitStream(dqt.getBitStream())
+    bitstream.addBitStream(dqt2.getBitStream())
+
+    //SOF0
+    bitstream.addBitStream(sof0.getBitStream())
+
+    //DHT
+    bitstream.addBitStream(dht.getBitStream())
+    bitstream.addBitStream(dht2.getBitStream())
+
+
+    //EOI
+    bitstream.addByteToStream(arrayListOf(0xffu, 0xd9u))
+
+    bitstream.saveToFileAsBytes("test.jpeg")
+
 }
 
