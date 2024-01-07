@@ -1,5 +1,7 @@
 package DCT
 
+import Huffman
+import datatypes.BitStream
 import datatypes.Channel
 import org.ejml.simple.SimpleMatrix
 import kotlin.math.cos
@@ -13,11 +15,103 @@ class DCT {
         const val tileSize = 8
         const val sqrt2 = 1.41421356237
 
+        private fun zickZackSort(quantizationTable: ArrayList<UByte>): ArrayList<UByte> {
+            val sortedTable = ArrayList<UByte>()
+
+            val zickZackOrder = intArrayOf(0, 1, 5, 6, 14, 15, 27, 28,
+                2, 4, 7, 13, 16, 26, 29, 42,
+                3, 8, 12, 17, 25, 30, 41, 43,
+                9, 11, 18, 24, 31, 40, 44, 53,
+                10, 19, 23, 32, 39, 45, 52, 54,
+                20, 22, 33, 38, 46, 51, 55, 60,
+                21, 34, 37, 47, 50, 56, 59, 61,
+                35, 36, 48, 49, 57, 58, 62, 63)
+
+            for (i in 0..63) {
+                sortedTable.add(quantizationTable[zickZackOrder[i]])
+            }
+
+            return sortedTable
+        }
+
         fun quantMatrix50(): SimpleMatrix {
             val result = SimpleMatrix(tileSize, tileSize)
             result.fill(50.0)
             return result
         }
+
+
+        fun runlengthCoding(data: SimpleMatrix): BitStream {
+            val result = ArrayList<Pair<Int, Int>>()
+            var zeroCounter = 0
+
+            var numZeroesAtEnd = 0
+            for (n in data.toArray2().toList().flatMap { it.toList() }.reversed()) {
+                if (n == 0.0) numZeroesAtEnd++
+                else break
+            }
+
+            for (i in 1..63 - numZeroesAtEnd) {
+                val value = data.get(i / 8, i % 8)
+                if (value == 0.0) {
+                    zeroCounter += 1
+                    if (zeroCounter == 16) {
+                        result.add(Pair(zeroCounter, value.toInt()))
+                        zeroCounter = 0
+                    }
+                } else {
+                    result.add(Pair(zeroCounter, value.toInt()))
+                    zeroCounter = 0
+                }
+            }
+            if (numZeroesAtEnd != 0) {
+                result.add(Pair(0, 0))
+            }
+
+            //result to bit
+            var bitResult = BitStream()
+            val hufValues = IntArray(result.size)
+            for ((index, pair ) in result.withIndex()) {
+                val binary = Integer.toBinaryString(pair.second)
+                val hufInput = "0x${pair.first}${binary.length}".toInt(radix = 16)
+                hufValues.set(index, hufInput)
+            }
+
+            val huffman = Huffman()
+            val (_, symbolToCodeMap) = huffman.encode(hufValues)
+
+            for (pair in result) {
+                val binary = Integer.toBinaryString(pair.second)
+                val hufVal = symbolToCodeMap.get("0x${pair.first}${binary.length}".toInt(radix = 16))
+                    ?: throw Exception("No hufVal was found for pair: $pair")
+
+                bitResult.addBitStreamUntilByteInsertIndex(hufVal)
+                binary.toCharArray().forEach { bitResult.addToList(Integer.parseInt(it.toString())) }
+
+            }
+            return bitResult
+        }
+
+//        fun dcDifference(data: ArrayList<Int>): ArrayList<Pair<Int,String >> {
+//            var result = BitStream()
+//
+//            val huffman = Huffman()
+//            var difPairs = ArrayList<Pair<Int,String >>()
+//            for(date in data) {
+//                var bitsAsString =  Integer.toBinaryString(date)
+//                var bitLength = bitsAsString.length
+//                var stringBitMinusOne =  Integer.toBinaryString(date-1)
+//                
+//            if(date>=0){
+//            difPairs.add(Pair(bitLength,stringBitMinusOne))
+//            }}
+//
+//
+//        }
+//
+//        fun toHuffman(data: ArrayList<Int>): BitStream {
+//
+//        }
 
         fun luminanceQuantTable(): SimpleMatrix {
             return SimpleMatrix( 8, 8, true,
