@@ -144,9 +144,9 @@ class DCT {
 //TODO: • Erstellen der vier Huffman-Tabellen AC/DC × Y/CbCr
 //        Wegen Unterabtastung ist Reihenfolge der kodierten
 //        Blöcke wichtig
-// 4 8x8 blöcke beachten -> 4 y = 1 CB = 1 CR vong pixelbereich
+// 4 8x8 blöcke beachten -> 4 y = 1 CB = 1 CR von pixelbereich
 // deswegen erfolgt Ausgabe nach Schema:Y1 Y2 Y3 Y4 Cb Cr
-fun createAcYTable(data: ArrayList<Pair<Int, Int>>): HashMap<Int, BitStream>{
+fun createACYTable(data: ArrayList<Pair<Int, Int>>): HashMap<Int, BitStream>{
     val toEncode = data.stream().map {
         val result: Int
         result = if (it.second == 10) {
@@ -163,7 +163,8 @@ fun createAcYTable(data: ArrayList<Pair<Int, Int>>): HashMap<Int, BitStream>{
     val (_, result) = huffman.encode(toEncode)
     return result
 }
-fun createACbCrTable(dataCb: ArrayList<Pair<Int, Int>>, dataCr: ArrayList<Pair<Int, Int>>): HashMap<Int, BitStream> {
+
+fun createACCbCrTable(dataCb: ArrayList<Pair<Int, Int>>, dataCr: ArrayList<Pair<Int, Int>>): HashMap<Int, BitStream> {
     val data = dataCb+dataCr
     val toEncode = data.stream().map {
         val result: Int
@@ -182,13 +183,13 @@ fun createACbCrTable(dataCb: ArrayList<Pair<Int, Int>>, dataCr: ArrayList<Pair<I
     return result
 }
 
-fun createDcYTable(data: ArrayList<Int>): HashMap<Int, BitStream>{
+fun createDCYTable(data: ArrayList<Int>): HashMap<Int, BitStream>{
     val huffman = Huffman()
     val (_, result) = huffman.encode(data.toIntArray())
     return result
 }
 
-fun createDCbCrTable(dataCb: ArrayList<Int>, dataCr: ArrayList<Int>): HashMap<Int, BitStream> {
+fun createDCCbCrTable(dataCb: ArrayList<Int>, dataCr: ArrayList<Int>): HashMap<Int, BitStream> {
     var huffman = Huffman()
     val (_, result) = huffman.encode(dataCb.toIntArray() + dataCr.toIntArray())
     return result
