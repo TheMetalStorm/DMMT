@@ -1,12 +1,13 @@
 package DCT
 
+import HufEncode
 import Huffman
 import datatypes.BitStream
 import datatypes.Channel
 import org.ejml.simple.SimpleMatrix
 import kotlin.math.cos
 import kotlinx.coroutines.*
-
+import java.util.HashMap
 
 
 class DCT {
@@ -40,8 +41,25 @@ class DCT {
             return result
         }
 
+        //TODO: make real
+//        fun a(){
+//            superduperlisteY: ArrayList<Pair<Int, Int>>>
+//            superduperlisteChroma: ArrayList<Pair<Int, Int>>>
 
-        fun runlengthCoding(data: SimpleMatrix): BitStream {
+
+//            loop pro 8x8
+//                _, liste = rungleghtCodign(block.y)
+//                _, listeCb = rungleghtCodign(block.cb)
+//                _, listeCr = rungleghtCodign(block.cr)
+//                superduperlisteY.addAll(liste)
+//                superduperlisteChroma.addAll(listeCb, listeCr)
+//            end loop
+
+//            tableACY = createAcYTable(superduperlisteY)
+//            tableACChroma = createAcCbCrTable(superduperlisteChroma)
+//        }
+
+        fun runlengthCoding(data: SimpleMatrix): Pair<BitStream, ArrayList<Pair<Int, Int>>>  {
             val result = ArrayList<Pair<Int, Int>>()
             var zeroCounter = 0
 
@@ -89,29 +107,94 @@ class DCT {
                 binary.toCharArray().forEach { bitResult.addToList(Integer.parseInt(it.toString())) }
 
             }
-            return bitResult
+            return Pair(bitResult, result)
         }
 
-//        fun dcDifference(data: ArrayList<Int>): ArrayList<Pair<Int,String >> {
-//            var result = BitStream()
-//
-//            val huffman = Huffman()
-//            var difPairs = ArrayList<Pair<Int,String >>()
-//            for(date in data) {
-//                var bitsAsString =  Integer.toBinaryString(date)
-//                var bitLength = bitsAsString.length
-//                var stringBitMinusOne =  Integer.toBinaryString(date-1)
-//                
-//            if(date>=0){
-//            difPairs.add(Pair(bitLength,stringBitMinusOne))
-//            }}
-//
-//
-//        }
-//
-//        fun toHuffman(data: ArrayList<Int>): BitStream {
-//
-//        }
+        fun dcDifference(data: ArrayList<Int>): ArrayList<Pair<Int,String >> {
+            var difPairs = ArrayList<Pair<Int,String >>()
+            for(date in data) {
+                val bitsAsString =  Integer.toBinaryString(date)
+                val category: Int = bitsAsString.length
+
+                if(category == 1 && bitsAsString.equals("0")){
+                    difPairs.add(Pair(category, ""))
+                    continue
+                }
+
+                if (date>0){
+                    val lowerOrderBits = bitsAsString.takeLast(category)
+                    difPairs.add(Pair(category, lowerOrderBits))
+                }
+                else{
+                    var stringBitMinusOne =  Integer.toBinaryString(date-1)
+                    var lowerOrderBits = stringBitMinusOne.takeLast(category)
+                    difPairs.add(Pair(category, lowerOrderBits))
+                }
+            }
+
+            return difPairs
+        }
+        fun getCategoryHuffmanCodes(data: ArrayList<Int>): HashMap<Int, BitStream> {
+            val dataIntArray: IntArray = data.toIntArray()
+            val huffman = Huffman()
+            val hufResult: HufEncode = huffman.encode(dataIntArray)
+
+            return hufResult.symbolToCodeMap
+        }
+//TODO: • Erstellen der vier Huffman-Tabellen AC/DC × Y/CbCr
+//        Wegen Unterabtastung ist Reihenfolge der kodierten
+//        Blöcke wichtig
+// 4 8x8 blöcke beachten -> 4 y = 1 CB = 1 CR vong pixelbereich
+// deswegen erfolgt Ausgabe nach Schema:Y1 Y2 Y3 Y4 Cb Cr
+fun createAcYTable(data: ArrayList<Pair<Int, Int>>): HashMap<Int, BitStream>{
+    val toEncode = data.stream().map {
+        val result: Int
+        result = if (it.second == 10) {
+            10 * (it.first + 1)
+        } else {
+            Integer.parseInt(it.first.toString() + it.second.toString())
+        }
+        result
+
+    }.toList().toIntArray()
+
+
+    val huffman = Huffman()
+    val (_, result) = huffman.encode(toEncode)
+    return result
+}
+fun createACbCrTable(dataCb: ArrayList<Pair<Int, Int>>, dataCr: ArrayList<Pair<Int, Int>>): HashMap<Int, BitStream> {
+    val data = dataCb+dataCr
+    val toEncode = data.stream().map {
+        val result: Int
+        result = if (it.second == 10) {
+            10 * (it.first + 1)
+        } else {
+            Integer.parseInt(it.first.toString() + it.second.toString())
+        }
+        result
+
+    }.toList().toIntArray()
+
+
+    val huffman = Huffman()
+    val (_, result) = huffman.encode(toEncode)
+    return result
+}
+
+fun createDcYTable(data: ArrayList<Int>): HashMap<Int, BitStream>{
+    val huffman = Huffman()
+    val (_, result) = huffman.encode(data.toIntArray())
+    return result
+}
+
+fun createDCbCrTable(dataCb: ArrayList<Int>, dataCr: ArrayList<Int>): HashMap<Int, BitStream> {
+    var huffman = Huffman()
+    val (_, result) = huffman.encode(dataCb.toIntArray() + dataCr.toIntArray())
+    return result
+}
+
+
 
         fun luminanceQuantTable(): SimpleMatrix {
             return SimpleMatrix( 8, 8, true,
