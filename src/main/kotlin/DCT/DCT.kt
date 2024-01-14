@@ -16,7 +16,7 @@ class DCT {
         const val tileSize = 8
         const val sqrt2 = 1.41421356237
 
-        private fun zickZackSort(quantizationTable: ArrayList<UByte>): ArrayList<UByte> {
+        fun zickZackSort(quantizationTable: ArrayList<UByte>): ArrayList<UByte> {
             val sortedTable = ArrayList<UByte>()
 
             val zickZackOrder = intArrayOf(0, 1, 5, 6, 14, 15, 27, 28,
@@ -146,82 +146,7 @@ class DCT {
 //        Blöcke wichtig
 // 4 8x8 blöcke beachten -> 4 y = 1 CB = 1 CR von pixelbereich
 // deswegen erfolgt Ausgabe nach Schema:Y1 Y2 Y3 Y4 Cb Cr
-fun createACYTable(data: ArrayList<Pair<Int, Int>>): HashMap<Int, BitStream>{
-    val toEncode = data.stream().map {
-        val result: Int
-        result = if (it.second == 10) {
-            10 * (it.first + 1)
-        } else {
-            Integer.parseInt(it.first.toString() + it.second.toString())
-        }
-        result
 
-    }.toList().toIntArray()
-
-
-    val huffman = Huffman()
-    val (_, result) = huffman.encode(toEncode)
-    return result
-}
-
-fun createACCbCrTable(dataCb: ArrayList<Pair<Int, Int>>, dataCr: ArrayList<Pair<Int, Int>>): HashMap<Int, BitStream> {
-    val data = dataCb+dataCr
-    val toEncode = data.stream().map {
-        val result: Int
-        result = if (it.second == 10) {
-            10 * (it.first + 1)
-        } else {
-            Integer.parseInt(it.first.toString() + it.second.toString())
-        }
-        result
-
-    }.toList().toIntArray()
-
-
-    val huffman = Huffman()
-    val (_, result) = huffman.encode(toEncode)
-    return result
-}
-
-fun createDCYTable(data: ArrayList<Int>): HashMap<Int, BitStream>{
-    val huffman = Huffman()
-    val (_, result) = huffman.encode(data.toIntArray())
-    return result
-}
-
-fun createDCCbCrTable(dataCb: ArrayList<Int>, dataCr: ArrayList<Int>): HashMap<Int, BitStream> {
-    var huffman = Huffman()
-    val (_, result) = huffman.encode(dataCb.toIntArray() + dataCr.toIntArray())
-    return result
-}
-
-
-
-        fun luminanceQuantTable(): SimpleMatrix {
-            return SimpleMatrix( 8, 8, true,
-                16.0,	11.0,	10.0,	16.0,	24.0,	40.0,	51.0,	61.0,
-                12.0,	12.0,	14.0,	19.0,	26.0,	58.0,	60.0,	55.0,
-                14.0,	13.0,	16.0,	24.0,	40.0,	57.0,	69.0,	56.0,
-                14.0,	17.0,	22.0,	29.0,	51.0,	87.0,	80.0,	62.0,
-                18.0,	22.0,	37.0,	56.0,	68.0,	109.0,	103.0,	77.0,
-                24.0,	35.0,	55.0,	64.0,	81.0,	104.0,	113.0,	92.0,
-                49.0,	64.0,	78.0,	87.0,	103.0,	121.0,	120.0,	101.0,
-                72.0,	92.0,	95.0,	98.0,	112.0,	100.0,	103.0,	99.0,
-            )
-        }
-
-        fun chrominanceQuantTable(): SimpleMatrix {
-            return SimpleMatrix( 8, 8, true,
-                17.0,	18.0,	24.0,	47.0,	99.0,	99.0,	99.0,	99.0,
-                18.0,	21.0,	26.0,	66.0,	99.0,	99.0,	99.0,	99.0,
-                24.0,	26.0,	56.0,	99.0,	99.0,	99.0,	99.0,	99.0,
-                47.0,	66.0,	99.0,	99.0,	99.0,	99.0,	99.0,	99.0,
-                99.0,	99.0,	99.0,	99.0,	99.0,	99.0,	99.0,	99.0,
-                99.0,	99.0,	99.0,	99.0,	99.0,	99.0,	99.0,	99.0,
-                99.0,	99.0,	99.0,	99.0,	99.0,	99.0,	99.0,	99.0,
-                99.0,	99.0,	99.0,	99.0,	99.0,	99.0,	99.0,	99.0,
-            )
-        }
         fun quantize(data: SimpleMatrix, quantizationMatrix: SimpleMatrix): SimpleMatrix{
 
             val NW = data.numCols

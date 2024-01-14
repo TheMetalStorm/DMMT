@@ -176,6 +176,23 @@ class ImageYCbCr(var pixels: Array<Array<YCbCr>>) {
         }
     }
 
+    fun getChannel(channel: Int): Channel{
+        var result = Channel(w, h)
+        for (x in 0..<w) {
+            for (y in 0..<h) {
+                val color = getPixel(x, y)
+                val channelValue =
+                    if (channel == 0) color.y
+                    else if(channel == 1) color.cb
+                    else if(channel == 2) color.cr
+                    else throw Exception("getChannel only supports channels 0,1,2")
+                result.setValue(x, y, channelValue.toDouble())
+            }
+        }
+        return result
+
+    }
+
         companion object{
         fun empty(w: Int, h: Int): ImageYCbCr{
             val pixels: Array<Array<YCbCr>> = Array(h){ Array(w){ YCbCr() } }
