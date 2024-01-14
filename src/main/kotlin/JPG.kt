@@ -16,7 +16,7 @@ class JPG {
 
         fun encode(imgData: ImageRGB) {
             var colorConvertedData = imgData.toYCbCr()
-            val subsampledData = colorConvertedData.subsample(TODO(), TODO(), TODO())
+            val subsampledData = colorConvertedData.subsample(4, 2, 0)
 
             var y = subsampledData.getChannel(0)
             var cb = subsampledData.getChannel(1)
@@ -32,6 +32,8 @@ class JPG {
             val dcListCr: ArrayList<Int>
 
             var zickZacked: SimpleMatrix
+            val NW = imgData.w
+            val NH = imgData.h
 
             for((channelNum, channel) in channels.withIndex()){
 
@@ -42,8 +44,7 @@ class JPG {
 
 
                 //TODO: first loop over all 8x8, get DC components -> dcList
-                val NW = imgData.w
-                val NH = imgData.h
+
 
                 runBlocking {
                     for (i in 0..<NH step DCT.tileSize) {
@@ -59,39 +60,39 @@ class JPG {
                 }
             }
 
-            //TODO: calc dcDifference with dcList
-
             for((channelNum, channel) in channels.withIndex()){
 
+                var dcDiffList =
+                if(channelNum == 0) DCT.dcDifference(dcListY)
+                else if (channelNum == 1) DCT.dcDifference(dcListCb)
+                else  DCT.dcDifference(dcListCr)
 
 
                 runBlocking {
                     for (i in 0..<NH step DCT.tileSize) {
                         for (j in 0..<NW step DCT.tileSize) {
                             launch(Dispatchers.Default) {
-                                val dcDiff = dcr
+                                val curTile = zickZacked.extractMatrix(i, i + DCT.tileSize, j, j + DCT.tileSize)
+                                val codedTile: Pair<BitStream, ArrayList<Pair<Int, Int>>> = DCT.runlengthCoding(curTile)
+
+                                val acCoefficient = codedTile.first
+                                val dcCoefficient = 
+
+                                if(channelNum == 0) allRunlengthCodedLuminanceData.addAll(codedTile.second)
+                                else if (channelNum == 1) allRunlengthCodedCbData.addAll(codedTile.second)
+                                else  allRunlengthCodedCrData.addAll(codedTile.second)
+
+
                             }
                         }
                     }
                 }
-                //            loop pro 8x8
-
-                //                _, liste = rungleghtCodign(block.y)
-                //                _, listeCb = rungleghtCodign(block.cb)
-                //                _, listeCr = rungleghtCodign(block.cr)
-                //                superduperlisteY.addAll(liste)
-                //                superduperlisteChroma.addAll(listeCb, listeCr)
-                //            end loop
-
-
             }
             val tableACY = createACYTable(allRunlengthCodedLuminanceData)
             val tableACChroma = createACCbCrTable(allRunlengthCodedCbData, allRunlengthCodedCrData)
-            val tableDCY = TODO()
-            val tableDCChroma = TODO()
+            val tableDCY = createDCYTable(dcListY)
+            val tableDCChroma = createDCCbCrTable(dcListCb, dcListCr)
 
-//            val tableDCY = createAcYTable(superduperlisteY)
-//            val tableDCChroma = createAcCbCrTable(superduperlisteChroma)
 
             //TODO Quanticise
 
@@ -119,7 +120,7 @@ class JPG {
             var lenghtLow = TODO()
             bitStreamToBuild.addBitStream(SOS(lenghtHigh, lenghtLow, TODO()).getBitStream())
         }
-    }
+
 
     fun createACYTable(data: ArrayList<Pair<Int, Int>>): HashMap<Int, BitStream> {
         val toEncode = data.stream().map {
@@ -169,4 +170,5 @@ class JPG {
         val (_, result) = huffman.encode(dataCb.toIntArray() + dataCr.toIntArray())
         return result
     }
+}
 }
