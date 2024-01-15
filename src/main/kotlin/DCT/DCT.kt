@@ -35,6 +35,28 @@ class DCT {
             return sortedTable
         }
 
+        fun zickZackSort(quantizationMatrix: SimpleMatrix): SimpleMatrix {
+
+            val sortedArray: Array<Array<Double>> = Array(8){ Array(8){ 0.0}}
+
+            val zickZackOrder = intArrayOf(0, 1, 5, 6, 14, 15, 27, 28,
+                2, 4, 7, 13, 16, 26, 29, 42,
+                3, 8, 12, 17, 25, 30, 41, 43,
+                9, 11, 18, 24, 31, 40, 44, 53,
+                10, 19, 23, 32, 39, 45, 52, 54,
+                20, 22, 33, 38, 46, 51, 55, 60,
+                21, 34, 37, 47, 50, 56, 59, 61,
+                35, 36, 48, 49, 57, 58, 62, 63)
+
+            for(i in 0..63) {
+                val row = zickZackOrder[i] / 8
+                val col = zickZackOrder[i] % 8
+                sortedArray[row][col] = quantizationMatrix.get(row,col)
+
+            }
+            return Channel(8, 8, sortedArray).toSimpleMatrix()
+        }
+
         fun quantMatrix50(): SimpleMatrix {
             val result = SimpleMatrix(tileSize, tileSize)
             result.fill(50.0)

@@ -2,13 +2,13 @@ package JPGSegments
 
 import datatypes.BitStream
 
-data class SOS (val length: UByte, val componentCount: UByte, val components: ArrayList<UByte>) {
+data class SOS (val componentCount: Int, val components: ArrayList<UByte>) {
 
     private var bitStream = BitStream()
     init {
         checkInput()
 
-        val length : UShort = (8+componentCount.toInt()*3).toUShort();
+        val length : UShort = (6+componentCount*2).toUShort();
         val lengthLow = length.toUByte()
         val lengthHigh = (length.toInt() shr 8).toUByte()
 
@@ -19,10 +19,6 @@ data class SOS (val length: UByte, val componentCount: UByte, val components: Ar
         checkFor0xff(bitStream)
     }
 fun checkInput(){
-    val neededLength = componentCount.toInt()*2+6
-    if (length.toInt() !=neededLength){
-        throw Exception("length has to be neededLength")
-    }
     if(componentCount.toInt()<1||componentCount.toInt()>4){
         throw Exception("componentCount has to be between 1 and 4 inclusive")
     }
